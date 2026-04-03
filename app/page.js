@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import RobotAvatar from '@/components/RobotAvatar';
 import DebateChat from '@/components/DebateChat';
 import ControlPanel from '@/components/ControlPanel';
@@ -12,16 +12,16 @@ import VotingPanel from '@/components/VotingPanel';
 import AudienceTicker from '@/components/AudienceTicker';
 import HistorySidebar from '@/components/HistorySidebar';
 import NeuralHeckle from '@/components/NeuralHeckle';
-import { personas } from '@/lib/mockDebate';
+import { personas, humanPersona } from '@/lib/mockDebate';
 
-const TURNS_PER_ROUND = personas.length; // 4
 const TOTAL_ROUNDS = 5;
-const MAX_TURNS = TURNS_PER_ROUND * TOTAL_ROUNDS; // 20
+const MAX_TURNS_BASE = personas.length * TOTAL_ROUNDS;
 
 export default function Home() {
   const [topic, setTopic] = useState('Should humanity prioritize space exploration or ocean conservation?');
   const [topicLocked, setTopicLocked] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | initializing | playing | paused | voting | judging | finished
+  const [participationMode, setParticipationMode] = useState('watch'); // watch | interact
   const [history, setHistory] = useState([]);
   const [turnIndex, setTurnIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -46,6 +46,7 @@ export default function Home() {
   const [userVote, setUserVote] = useState(null);
   const [roundSpeakingOrder, setRoundSpeakingOrder] = useState([]);
   const [activeHeckle, setActiveHeckle] = useState(null);
+  const [heckleCountdown, setHeckleCountdown] = useState(0);
   
   // History State
   const [historyItems, setHistoryItems] = useState([]);
@@ -60,18 +61,22 @@ export default function Home() {
   useEffect(() => { historyRef.current = history; }, [history]);
   useEffect(() => { isTypingRef.current = isTyping; }, [isTyping]);
 
-  const currentRound = Math.floor(turnIndex / TURNS_PER_ROUND) + 1;
-  const isRoundEnd = turnIndex > 0 && turnIndex % TURNS_PER_ROUND === 0;
+  const activePersonas = participationMode === 'interact' ? [...personas, humanPersona] : personas;
+  const turnsPerRound = activePersonas.length;
+  const maxTurns = turnsPerRound * TOTAL_ROUNDS;
+
+  const currentRound = Math.floor(turnIndex / turnsPerRound) + 1;
+  const isRoundEnd = turnIndex > 0 && turnIndex % turnsPerRound === 0;
 
   // Determine active persona based on dynamic round order
   const getActivePersona = () => {
     if (status === 'judging') return { id: 'judge', name: 'THE JUDGE AI', color: '#ffb700' };
-    const roundTurnIndex = turnIndex % TURNS_PER_ROUND;
-    if (roundSpeakingOrder && roundSpeakingOrder.length === TURNS_PER_ROUND) {
+    const roundTurnIndex = turnIndex % turnsPerRound;
+    if (roundSpeakingOrder && roundSpeakingOrder.length === turnsPerRound) {
       const pId = roundSpeakingOrder[roundTurnIndex];
-      return personas.find(p => p.id === pId) || personas[roundTurnIndex];
+      return activePersonas.find(p => p.id === pId) || activePersonas[roundTurnIndex];
     }
-    return personas[roundTurnIndex];
+    return activePersonas[roundTurnIndex];
   };
 
   const activePersona = getActivePersona();
@@ -178,6 +183,13 @@ export default function Home() {
     // Dynamic persona retrieval
     const persona = getActivePersona();
     
+    // HUMAN TURN HANDLING
+    if (persona.id === 'user') {
+      setStatus('waiting-for-user');
+      setIsTyping(false);
+      return;
+    }
+
     const conf = confidences[persona.id] || 75;
     const mood = moods[persona.id] || 'calm';
     const msgIndex = currentHistory.length;
@@ -254,7 +266,26 @@ export default function Home() {
 
     setIsTyping(false);
     setTurnIndex(prev => prev + 1);
-  }, [turnIndex, confidences, moods, plannerData, topic, callFactCheck, callAudience]);
+  }, [turnIndex, confidences, moods, plannerData, topic, callFactCheck, callAudience, activePersonas, turnsPerRound]);
+
+  const handleUserSubmit = (text) => {
+    if (status !== 'waiting-for-user') return;
+    const persona = humanPersona;
+    const msgIndex = history.length;
+    
+    setHistory(prev => [...prev, { 
+      persona, 
+      text, 
+      rawText: text, 
+      scratchpad: 'The human interjects with original perspective.' 
+    }]);
+
+    callFactCheck(text, persona.name, msgIndex);
+    callAudience(text, persona.name);
+    
+    setStatus('playing');
+    setTurnIndex(prev => prev + 1);
+  };
 
   // ─── Judge Turn ───────────────────────────────────────────────
   const handleJudgeTurn = useCallback(async () => {
@@ -391,15 +422,15 @@ export default function Home() {
   useEffect(() => {
     let timeout;
     if (status === 'playing' && !isTyping) {
-      if (turnIndex >= MAX_TURNS) {
+      if (turnIndex >= maxTurns) {
         setStatus('voting');
         return;
       }
 
       // Start of a new round: call planner first
-      const isNewRound = turnIndex % TURNS_PER_ROUND === 0;
+      const isNewRound = turnIndex % turnsPerRound === 0;
       if (isNewRound) {
-        const rNum = Math.floor(turnIndex / TURNS_PER_ROUND) + 1;
+        const rNum = Math.floor(turnIndex / turnsPerRound) + 1;
         // Add a round marker to chat
         setRoundMarkers(prev => {
           const alreadyHas = prev.find(m => m.roundNumber === rNum);
@@ -414,11 +445,15 @@ export default function Home() {
         return;
       }
 
-      // End of a round: call critic before continuing
-      const isJustFinishedRound = turnIndex > 0 && turnIndex % TURNS_PER_ROUND === 0;
-      timeout = setTimeout(() => {
-        if (statusRef.current === 'playing') handleNextTurn();
-      }, 4500);
+      // End of a round or turn: Check for Interception Window
+      if (!isNewRound) {
+        setHeckleCountdown(5);
+      } else {
+        // Round start already has its own planner delay
+        timeout = setTimeout(() => {
+          if (statusRef.current === 'playing') handleNextTurn();
+        }, 3000);
+      }
     } else if (status === 'judging' && !isTyping) {
       timeout = setTimeout(() => { handleJudgeTurn(); }, 4000);
     }
@@ -426,12 +461,29 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [status, isTyping, turnIndex]);
 
+  // Interception Timer Countdown
+  useEffect(() => {
+    let interval;
+    if (status === 'playing' && heckleCountdown > 0) {
+      interval = setInterval(() => {
+        setHeckleCountdown(prev => {
+          if (prev <= 1) {
+            handleNextTurn();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [status, heckleCountdown, handleNextTurn]);
+
   // ─── End of each round: trigger critic ───────────────────────
   useEffect(() => {
-    if (turnIndex > 0 && turnIndex % TURNS_PER_ROUND === 0 && status === 'playing') {
-      const completedRound = Math.floor((turnIndex - 1) / TURNS_PER_ROUND) + 1;
+    if (turnIndex > 0 && turnIndex % turnsPerRound === 0 && status === 'playing') {
+      const completedRound = Math.floor((turnIndex - 1) / turnsPerRound) + 1;
       if (!criticResults[completedRound]) {
-        const roundArgs = historyRef.current.slice(-TURNS_PER_ROUND).filter(h => h.persona?.id !== 'judge');
+        const roundArgs = historyRef.current.slice(-turnsPerRound).filter(h => h.persona?.id !== 'judge');
         const theme = plannerData?.roundTheme || `Round ${completedRound}`;
         callCritic(roundArgs, completedRound, theme);
       }
@@ -472,43 +524,68 @@ export default function Home() {
       <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '1400px' }}>
         <audio ref={audioRef} loop src="/bg-music.mp3" preload="auto" style={{ display: 'none' }} />
 
-        <motion.h1 
-          className="text-gradient"
-          initial={{ letterSpacing: '0.1em', opacity: 0 }}
-          animate={{ letterSpacing: '0.25em', opacity: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
-          style={{ 
-            textAlign: 'center', 
-            marginBottom: '2rem', 
-            fontSize: '3rem',
-            fontWeight: 900,
-            textShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
-            position: 'relative'
-          }}
+        <motion.div
+           style={{ textAlign: 'center', marginBottom: '3rem', position: 'relative' }}
+           initial={{ opacity: 0, y: -20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 1 }}
         >
-          <motion.span
-            animate={{ 
-              textShadow: [
-                '0 0 10px rgba(0, 240, 255, 0.5)',
-                '0 0 30px rgba(0, 240, 255, 0.8)',
-                '0 0 10px rgba(0, 240, 255, 0.5)'
-              ]
+          {/* Cyber Glitch Heading */}
+          <motion.h1 
+            className="text-gradient"
+            style={{ 
+              fontSize: '4.5rem',
+              fontWeight: 950,
+              textTransform: 'uppercase',
+              letterSpacing: '0.4em',
+              lineHeight: 1,
+              position: 'relative',
+              display: 'inline-block',
+              filter: 'drop-shadow(0 0 15px rgba(0, 240, 255, 0.4))'
             }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           >
-            MULTI-MIND SIMULATOR
-          </motion.span>
-          <div style={{ 
-            position: 'absolute', 
-            bottom: '-10px', 
-            left: '50%', 
-            transform: 'translateX(-50%)', 
-            width: '100px', 
-            height: '2px', 
-            background: 'var(--primary)',
-            boxShadow: '0 0 15px var(--primary)'
-          }} />
-        </motion.h1>
+            {/* Main Title */}
+            <motion.span
+              animate={{ 
+                textShadow: [
+                  '2px 0 #ff00c1, -2px 0 #00fff9',
+                  '-2px 0 #ff00c1, 2px 0 #00fff9',
+                  '1px 0 #ff00c1, -1px 0 #00fff9'
+                ],
+                x: [0, -2, 2, 0]
+              }}
+              transition={{ duration: 0.2, repeat: Infinity, repeatType: 'mirror', repeatDelay: 3 }}
+            >
+              MULTI-MIND
+            </motion.span>
+            <br />
+            <motion.span 
+              style={{ fontSize: '2.5rem', letterSpacing: '0.8em', color: 'rgba(255,255,255,0.8)' }}
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            >
+              SIMULATOR
+            </motion.span>
+
+            {/* Cinematic Scanner Beam */}
+            <motion.div 
+               style={{
+                 position: 'absolute',
+                 top: 0, left: 0, width: '100%', height: '2px',
+                 background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
+                 boxShadow: '0 0 20px var(--primary)',
+                 zIndex: 10
+               }}
+               animate={{ top: ['0%', '110%', '0%'] }}
+               transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+            />
+          </motion.h1>
+
+          {/* Subtitle / Status */}
+          <div style={{ marginTop: '0.5rem', fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 800, letterSpacing: '0.5em', opacity: 0.6 }}>
+            NEURAL_CORE_v9.2 // STATUS: {status.toUpperCase()}
+          </div>
+        </motion.div>
 
         {!topicLocked ? (
           <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '2rem', textAlign: 'center' }}>
@@ -536,6 +613,36 @@ export default function Home() {
                 >{t}</button>
               ))}
             </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <button 
+                  onClick={() => setParticipationMode('watch')}
+                  style={{ 
+                    padding: '8px 24px', borderRadius: '25px', fontSize: '0.8rem', fontWeight: 700,
+                    background: participationMode === 'watch' ? 'var(--primary)' : 'transparent',
+                    color: participationMode === 'watch' ? '#000' : 'var(--text-muted)',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  WATCH MODE
+                </button>
+                <button 
+                  onClick={() => setParticipationMode('interact')}
+                  style={{ 
+                    padding: '8px 24px', borderRadius: '25px', fontSize: '0.8rem', fontWeight: 700,
+                    background: participationMode === 'interact' ? 'var(--primary)' : 'transparent',
+                    color: participationMode === 'interact' ? '#000' : 'var(--text-muted)',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  INTERACT MODE
+                </button>
+              </div>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>
+                {participationMode === 'watch' ? "Observe the 4 machine minds battle. You can still interject manually." : "You join as a 5th seat. The machines will wait for your formal turn."}
+              </p>
+            </div>
+
             <button className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }} onClick={() => {
               setTopicLocked(true);
               setStatus('initializing');
@@ -565,15 +672,21 @@ export default function Home() {
           />
 
           {/* Center: Avatar Colosseum */}
-          <div className="glass-panel" style={{ flex: '1', minWidth: '320px', display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '2rem', padding: '2rem', position: 'relative', placeItems: 'center' }}>
+          <div className="glass-panel" style={{ 
+            flex: '1', minWidth: '320px', 
+            display: 'grid', 
+            gridTemplateColumns: participationMode === 'interact' ? '1fr 1fr' : '1fr 1fr', 
+            gap: '2rem', padding: '2rem', position: 'relative', placeItems: 'center' 
+          }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 60%)', zIndex: 0 }} />
-            {personas.map((p) => {
+            {activePersonas.map((p) => {
               const lastMsg = [...history].reverse().find(h => h.persona.id === p.id);
+              const isSpeaking = (isTyping && activePersona?.id === p.id) || (status === 'waiting-for-user' && p.id === 'user');
               return (
-                <div key={p.id} style={{ zIndex: 1 }}>
+                <div key={p.id} style={{ zIndex: 1, gridColumn: (p.id === 'user') ? 'span 2' : 'auto' }}>
                   <RobotAvatar
                     persona={p}
-                    isSpeaking={isTyping && activePersona.id === p.id}
+                    isSpeaking={isSpeaking}
                     scratchpad={lastMsg?.scratchpad}
                     confidence={confidences[p.id] ?? 75}
                     mood={moods[p.id] ?? 'calm'}
@@ -628,10 +741,13 @@ export default function Home() {
               onReset={resetSimulation}
             />
 
-            {status === 'playing' && (
+            {(status === 'playing' || status === 'waiting-for-user') && (
               <NeuralHeckle 
-                onHeckle={(text) => setActiveHeckle(text)} 
+                onHeckle={(text) => status === 'waiting-for-user' ? handleUserSubmit(text) : setActiveHeckle(text)} 
                 disabled={isTyping} 
+                countdown={heckleCountdown}
+                onSkip={() => setHeckleCountdown(0)}
+                isYourTurn={status === 'waiting-for-user'}
               />
             )}
 

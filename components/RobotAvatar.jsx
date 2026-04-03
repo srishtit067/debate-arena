@@ -48,7 +48,9 @@ export default function RobotAvatar({ persona, isSpeaking, scratchpad, confidenc
         transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
       >
         <img 
-          src={`https://api.dicebear.com/7.x/bottts/svg?seed=${persona.name.replace(/\s+/g,'')}`} 
+          src={persona.id === 'user' 
+            ? `https://api.dicebear.com/7.x/avataaars/svg?seed=HumanObserver&backgroundColor=00f0ff`
+            : `https://api.dicebear.com/7.x/bottts/svg?seed=${persona.name.replace(/\s+/g,'')}`} 
           alt={persona.name}
           style={{ width: '100%', height: '100%', objectFit: 'contain', zIndex: 2 }}
         />
