@@ -14,11 +14,14 @@ The simulator orchestrates four distinct high-intellect machine personas:
 
 ---
 
-## 🎮 CORE FEATURES
+## 🎭 CORE FEATURES
 *   **Neural Council Manifest**: Real-time transparency into bot directives and logic.
 *   **Interact Mode (5th Seat)**: Join the debate as a formal participant. The **Strategic Planner AI** dynamically integrates your turns into the sequence.
-*   **Agentic Tool Layer**: Bots autonomously signal **"Neural Retrieval"** to invoke real-time fact-checking and evidence verification.
-*   **Cinematic "Glitch-Noir" UI**: A premium, high-frame-rate interface featuring a 10-second Neural Sync sequence and smooth Framer Motion transitions.
+*   **Epic Cinematic Graphics**: 
+    *   **Reactive Neural Matrix**: The background pulses in the signature color of the active speaker.
+    *   **Forensic HUD Overlay**: A futuristic Heads-Up Display with scanning brackets and real-time data streams.
+    *   **Spectral Auras**: High-fidelity energy fields and scanline glitches for each bot.
+*   **Agentic Tool Layer**: Bots autonomously signal **"Invoking Neural Retrieval"** to verify claims based on internal reasoning.
 *   **Industrial Audit Trail**: Export a full, round-by-round logical audit of the entire simulation in a professional PDF format.
 
 ---
