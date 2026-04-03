@@ -10,6 +10,7 @@ import PDFGenerator from '@/components/PDFGenerator';
 import CriticPanel from '@/components/CriticPanel';
 import VotingPanel from '@/components/VotingPanel';
 import AudienceTicker from '@/components/AudienceTicker';
+import HistorySidebar from '@/components/HistorySidebar';
 import { personas } from '@/lib/mockDebate';
 
 const TURNS_PER_ROUND = personas.length; // 4
@@ -42,6 +43,10 @@ export default function Home() {
   const [roundScoreHistory, setRoundScoreHistory] = useState([]);
   const [roundMarkers, setRoundMarkers] = useState([]);
   const [userVote, setUserVote] = useState(null);
+  
+  // History State
+  const [historyItems, setHistoryItems] = useState([]);
+  const [activeHistoryId, setActiveHistoryId] = useState(null);
 
   const statusRef = useRef(status);
   const historyRef = useRef(history);
@@ -286,7 +291,79 @@ export default function Home() {
 
     setIsTyping(false);
     setStatus('finished');
-  }, [criticResults, userVote, topic]);
+    
+    // Auto-save to history
+    saveToHistory({
+      topic,
+      history: [...currentHistory, { persona: judgePersona, text: '', rawText: '', scratchpad: '' }],
+      status: 'finished',
+      criticResults,
+      userVote,
+      confidences,
+      roundMarkers
+    });
+  }, [criticResults, userVote, topic, confidences, roundMarkers]);
+
+  // ─── History Management ─────────────────────────────────────────
+  const fetchHistory = useCallback(async () => {
+    try {
+      const res = await fetch('/api/history');
+      if (res.ok) {
+        const data = await res.json();
+        setHistoryItems(data);
+      }
+    } catch (e) {
+      console.error('Error fetching history:', e);
+    }
+  }, []);
+
+  const saveToHistory = async (data) => {
+    try {
+      await fetch('/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      fetchHistory();
+    } catch (e) {
+      console.error('Error saving to history:', e);
+    }
+  };
+
+  const loadHistoryItem = (item) => {
+    setActiveHistoryId(item.id);
+    setTopic(item.topic);
+    setHistory(item.history || []);
+    setStatus(item.status || 'finished');
+    setTurnIndex((item.history?.length || 0));
+    setCriticResults(item.criticResults || {});
+    setConfidences(item.confidences || { optimist: 75, skeptic: 75, comedy: 75, analyst: 75 });
+    setRoundMarkers(item.roundMarkers || []);
+    setTopicLocked(true);
+    setUserVote(item.userVote);
+  };
+
+  const resetSimulation = () => {
+    setStatus('idle');
+    setTopicLocked(false);
+    setHistory([]);
+    setTurnIndex(0);
+    setIsTyping(false);
+    setConfidences({ optimist: 75, skeptic: 75, comedy: 75, analyst: 75 });
+    setMoods({ optimist: 'calm', skeptic: 'calm', comedy: 'calm', analyst: 'calm' });
+    setPlannerData(null);
+    setFactChecks({});
+    setAudienceReactions([]);
+    setCriticResults({});
+    setRoundScoreHistory([]);
+    setRoundMarkers([]);
+    setUserVote(null);
+    setActiveHistoryId(null);
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   // ─── Main Orchestration Loop ──────────────────────────────────
   useEffect(() => {
@@ -370,10 +447,10 @@ export default function Home() {
           <StartSequence onComplete={() => setStatus('playing')} />
         )}
       </AnimatePresence>
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '1400px' }}>
         <audio ref={audioRef} loop src="/bg-music.mp3" preload="auto" style={{ display: 'none' }} />
 
-        <h1 className="text-gradient" style={{ textAlign: 'center', marginBottom: '2rem' }}>ARENA.AI</h1>
+        <h1 className="text-gradient" style={{ textAlign: 'center', marginBottom: '2rem' }}>MULTI-MIND SIMULATOR</h1>
 
         {!topicLocked ? (
           <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '2rem', textAlign: 'center' }}>
@@ -421,8 +498,15 @@ export default function Home() {
 
         {/* Arena Layout */}
         <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', opacity: topicLocked ? 1 : 0.5, pointerEvents: topicLocked ? 'auto' : 'none', transition: 'all 0.5s' }}>
+          
+          {/* Left: History Sidebar */}
+          <HistorySidebar 
+            historyItems={historyItems} 
+            onSelect={loadHistoryItem} 
+            activeId={activeHistoryId} 
+          />
 
-          {/* Left: Avatar Colosseum */}
+          {/* Center: Avatar Colosseum */}
           <div className="glass-panel" style={{ flex: '1', minWidth: '320px', display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '2rem', padding: '2rem', position: 'relative', placeItems: 'center' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 60%)', zIndex: 0 }} />
             {personas.map((p) => {
@@ -481,6 +565,7 @@ export default function Home() {
               onPlayPause={togglePlay}
               onNext={manuallyNext}
               isTyping={isTyping}
+              onReset={resetSimulation}
             />
 
             {status === 'finished' && <PDFGenerator topic={topic} history={history} />}

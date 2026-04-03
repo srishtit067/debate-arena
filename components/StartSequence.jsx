@@ -22,7 +22,7 @@ export default function StartSequence({ onComplete }) {
   const messages = [
     "ESTABLISHING NEURAL LINK...",
     "SYNCING PERSONA MATRICES...",
-    "ARENA LOCKED.",
+    "SIMULATOR SECURED.",
     "COMMENCING DEBATE"
   ];
 

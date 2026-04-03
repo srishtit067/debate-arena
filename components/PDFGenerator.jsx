@@ -22,7 +22,7 @@ export default function PDFGenerator({ topic, history }) {
       // Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("ARENA.AI OFFICIAL TRANSCRIPT & VERDICT", 14, 22);
+      doc.text("MULTI-MIND SIMULATOR OFFICIAL TRANSCRIPT", 14, 22);
       
       // Topic
       doc.setFont("helvetica", "italic");
