@@ -24,7 +24,7 @@ ${personaListText}
 
 Operational Rules:
 1. Every Participant ID must appear exactly once in the "speakingOrder".
-2. If "user" (Human) is present, place them strategically.
+2. Strategic Pivot: If the debate is stale, assign a "tacticalPivot" instruction in the JSON.
 3. IDs to use: ${personaIds.join(', ')}.
 
 Output ONLY valid JSON:
@@ -32,6 +32,7 @@ Output ONLY valid JSON:
   "angle": "short strategic focus", 
   "roundTheme": "round title", 
   "instruction": "one sentence guiding debaters",
+  "tacticalPivot": "How a specific agent should shift their argument structure",
   "speakingOrder": ${JSON.stringify(personaIds)} // Shuffle this!
 }`,
     prompt: `Generate the neural strategic directive for round ${roundNumber}.`,
