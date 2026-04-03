@@ -67,7 +67,7 @@ export default function LiveWallpaper({ activeColor = '#00f0ff' }) {
         ctx.beginPath();
         ctx.fillStyle = `rgba(${currentRgb}, ${p.opacity})`;
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.shadowBlur = dist < 20 ? 20 : 5;
+        ctx.shadowBlur = 8;
         ctx.shadowColor = `rgba(${currentRgb}, 1)`;
         ctx.fill();
         ctx.shadowBlur = 0;
