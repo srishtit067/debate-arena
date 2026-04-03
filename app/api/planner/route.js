@@ -18,28 +18,38 @@ export async function POST(req) {
     system: `You are the Debate Planner AI for the MULTI-MIND SIMULATOR. Your job is to set the semantic strategy and determine the optimal turn-taking sequence for this round.
 Topic: "${topic}"
 Round: ${roundNumber}
-Current Participants in this simulation:
+Current Participants:
 ${personaListText}
-
-${scoresText}
 
 Operational Rules:
 1. Every Participant ID must appear exactly once in the "speakingOrder".
-2. If "user" (The Human Unit) is present, place them strategically (e.g., as the provocateur or the final word).
+2. If "user" (Human) is present, place them strategically.
 3. IDs to use: ${personaIds.join(', ')}.
 
 Output ONLY valid JSON:
 {
-  "angle": "short strategic focus for this round", 
-  "roundTheme": "2-4 word round title", 
-  "instruction": "one sentence guiding debaters on the specific sub-topic",
-  "speakingOrder": ${JSON.stringify(personaIds)} // (Shuffle this based on your strategy)
+  "angle": "short strategic focus", 
+  "roundTheme": "round title", 
+  "instruction": "one sentence guiding debaters",
+  "speakingOrder": ${JSON.stringify(personaIds)} // Shuffle this!
 }`,
     prompt: `Generate the neural strategic directive for round ${roundNumber}.`,
   });
 
   try {
     const parsed = JSON.parse(result.text.trim());
+    // Robustness: filter out any invalid IDs or duplicates
+    const validOrder = (parsed.speakingOrder || [])
+      .filter(id => personaIds.includes(id))
+      .filter((v, i, a) => a.indexOf(v) === i);
+    
+    if (validOrder.length < personaIds.length) {
+       // fallback if planner missed someone
+       parsed.speakingOrder = personaIds; 
+    } else {
+       parsed.speakingOrder = validOrder;
+    }
+    
     return Response.json(parsed);
   } catch {
     return Response.json({

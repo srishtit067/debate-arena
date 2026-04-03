@@ -1,6 +1,9 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 45;
+
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req) {

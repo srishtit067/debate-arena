@@ -21,6 +21,7 @@ export default function Home() {
   const [topic, setTopic] = useState('Should humanity prioritize space exploration or ocean conservation?');
   const [topicLocked, setTopicLocked] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | initializing | playing | paused | voting | judging | finished
+  const [neuralStatus, setNeuralStatus] = useState('checking'); // checking | connected | disconnected
   const [participationMode, setParticipationMode] = useState('watch'); // watch | interact
   const [isUserTyping, setIsUserTyping] = useState(false);
   const [history, setHistory] = useState([]);
@@ -63,6 +64,13 @@ export default function Home() {
   useEffect(() => { historyRef.current = history; }, [history]);
   useEffect(() => { isTypingRef.current = isTyping; }, [isTyping]);
 
+  useEffect(() => {
+    fetch('/api/health')
+      .then(r => r.json())
+      .then(d => setNeuralStatus(d.status))
+      .catch(() => setNeuralStatus('disconnected'));
+  }, []);
+
   const activePersonas = participationMode === 'interact' ? [...personas, humanPersona] : personas;
   const turnsPerRound = activePersonas.length;
   const maxTurns = turnsPerRound * TOTAL_ROUNDS;
@@ -100,7 +108,11 @@ export default function Home() {
       if (res.ok) {
         const data = await res.json();
         setPlannerData(data);
-        if (data.speakingOrder) setRoundSpeakingOrder(data.speakingOrder);
+        if (data.speakingOrder) {
+          const uniqueOrder = [...new Set(data.speakingOrder)]
+            .filter(id => activePersonas.some(ap => ap.id === id));
+          setRoundSpeakingOrder(uniqueOrder);
+        }
         return data;
       }
     } catch (e) { console.error('Planner error:', e); }
@@ -242,12 +254,21 @@ export default function Home() {
           let note = newHistory[lastIndex].scratchpad || '';
 
           const noteMatch = currentFull.match(/\[(.*?)\]/s);
-          if (noteMatch && currentFull.indexOf('[') < 30 && currentFull.indexOf(']') < 400) {
+          if (noteMatch) {
             let rawNote = noteMatch[1].trim();
             if (rawNote.toUpperCase().startsWith('NOTE:')) rawNote = rawNote.substring(5).trim();
             note = rawNote;
-            const splitIndex = currentFull.indexOf(']') + 1;
-            displayTxt = currentFull.substring(splitIndex).trim();
+            
+            // Only split if the bracket is at the very beginning
+            if (currentFull.trim().startsWith('[')) {
+              const splitIndex = currentFull.indexOf(']') + 1;
+              displayTxt = currentFull.substring(splitIndex).trim();
+            }
+          }
+          
+          // Safety Fallback: Never show a blank comment if there is raw content
+          if (!displayTxt.trim() && currentFull.trim()) {
+            displayTxt = currentFull.trim();
           }
 
           newHistory[lastIndex] = { ...newHistory[lastIndex], rawText: currentFull, text: displayTxt, scratchpad: note };
@@ -263,11 +284,14 @@ export default function Home() {
       }
 
     } catch (e) {
-      console.error(e);
+      console.error('STREAM ERROR:', e);
       setHistory(prev => {
         const newHistory = [...prev];
         const lastIdx = newHistory.length - 1;
-        newHistory[lastIdx] = { ...newHistory[lastIdx], text: newHistory[lastIdx].text + ' [ERROR: AI Core disconnected]' };
+        newHistory[lastIdx] = { 
+          ...newHistory[lastIdx], 
+          text: ' [SYSTEM ERROR: Neural Link Dropped. Check your GROQ_API_KEY if running from GitHub.]' 
+        };
         return newHistory;
       });
     }
@@ -672,7 +696,23 @@ export default function Home() {
               </div>
             </div>
 
-            <button className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', position: 'relative', overflow: 'hidden' }} onClick={() => {
+            {/* Neural Health Status */}
+            <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <span style={{ color: 'var(--text-muted)' }}>NEURAL_CORE_LINK:</span>
+              <div style={{ 
+                width: '10px', height: '10px', borderRadius: '50%', 
+                background: neuralStatus === 'connected' ? '#00f0ff' : neuralStatus === 'disconnected' ? '#ff4444' : '#ffb700',
+                boxShadow: `0 0 10px ${neuralStatus === 'connected' ? '#00f0ff' : neuralStatus === 'disconnected' ? '#ff4444' : '#ffb700'}`,
+                transition: 'all 0.5s'
+              }} />
+              <span style={{ color: neuralStatus === 'connected' ? '#00f0ff' : neuralStatus === 'disconnected' ? '#ff4444' : '#ffb700' }}>
+                {neuralStatus === 'connected' ? 'CONNECTED' : neuralStatus === 'disconnected' ? 'OFFLINE (Check API Key)' : 'SYNCHRONIZING...'}
+              </span>
+            </div>
+
+            <button className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', position: 'relative', overflow: 'hidden' }} 
+              disabled={neuralStatus !== 'connected'}
+              onClick={() => {
               setTopicLocked(true);
               setStatus('initializing');
               if (audioRef.current) { audioRef.current.volume = 0.4; audioRef.current.play().catch(() => {}); }
@@ -732,11 +772,12 @@ export default function Home() {
               const lastMsg = [...history].reverse().find(h => h.persona.id === p.id);
               const isSpeaking = (isTyping && activePersona?.id === p.id) || (status === 'waiting-for-user' && p.id === 'user');
               return (
-                <div key={p.id} style={{ zIndex: 1, gridColumn: (p.id === 'user') ? 'span 2' : 'auto' }}>
+                <div key={p.id} style={{ zIndex: (isSpeaking || lastMsg?.text) ? 100 : 1, gridColumn: (p.id === 'user') ? 'span 2' : 'auto' }}>
                   <RobotAvatar
                     persona={p}
                     isSpeaking={isSpeaking}
                     scratchpad={lastMsg?.scratchpad}
+                    text={lastMsg?.text}
                     confidence={confidences[p.id] ?? 75}
                     mood={moods[p.id] ?? 'calm'}
                   />
