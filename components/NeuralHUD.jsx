@@ -1,7 +1,16 @@
 'use client';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export default function NeuralHUD() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
+
   return (
     <div style={{
       position: 'fixed',
