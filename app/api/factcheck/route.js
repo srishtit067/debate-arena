@@ -1,7 +1,8 @@
 import { generateText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
+import { NEURAL_KEY } from '@/lib/neural-config';
 
-const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+const groq = createGroq({ apiKey: process.env.GROQ_API_KEY || NEURAL_KEY });
 
 export async function POST(req) {
   const { argument, personaName } = await req.json();

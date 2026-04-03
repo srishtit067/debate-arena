@@ -131,60 +131,6 @@ export default function RobotAvatar({ persona, isSpeaking, scratchpad, text, con
           </motion.div>
         )}
 
-        {/* Floating Speech Bubble */}
-        <AnimatePresence>
-          {text && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 10 }}
-              style={{
-                position: 'absolute',
-                bottom: '120px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '280px',
-                padding: '1rem',
-                background: 'rgba(10, 20, 30, 0.95)',
-                border: `1px solid ${persona.color}`,
-                borderRadius: '16px',
-                color: '#fff',
-                fontSize: '0.85rem',
-                lineHeight: '1.5',
-                textAlign: 'left',
-                boxShadow: `0 10px 40px rgba(0,0,0,0.8), 0 0 20px ${persona.color}33`,
-                backdropFilter: 'blur(12px)',
-                zIndex: 999,
-                pointerEvents: 'none'
-              }}
-            >
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 0,
-                height: 0,
-                borderLeft: '10px solid transparent',
-                borderRight: '10px solid transparent',
-                borderTop: `10px solid ${persona.color}`
-              }} />
-              
-              <div style={{ 
-                fontSize: '0.6rem', 
-                fontWeight: 900, 
-                color: persona.color, 
-                marginBottom: '4px',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase'
-              }}>
-                {persona.name} // TRANSMITTING
-              </div>
-              <div style={{ fontWeight: 400, color: '#ffffff' }}>{text}</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Scratchpad Note Panel */}
         <AnimatePresence>
           {scratchpad && (

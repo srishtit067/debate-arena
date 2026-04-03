@@ -772,18 +772,61 @@ export default function Home() {
               const lastMsg = [...history].reverse().find(h => h.persona.id === p.id);
               const isSpeaking = (isTyping && activePersona?.id === p.id) || (status === 'waiting-for-user' && p.id === 'user');
               return (
-                <div key={p.id} style={{ zIndex: (isSpeaking || lastMsg?.text) ? 100 : 1, gridColumn: (p.id === 'user') ? 'span 2' : 'auto' }}>
+                <div key={p.id} style={{ zIndex: isSpeaking ? 10 : 1, gridColumn: (p.id === 'user') ? 'span 2' : 'auto' }}>
                   <RobotAvatar
                     persona={p}
                     isSpeaking={isSpeaking}
                     scratchpad={lastMsg?.scratchpad}
-                    text={lastMsg?.text}
                     confidence={confidences[p.id] ?? 75}
                     mood={moods[p.id] ?? 'calm'}
                   />
                 </div>
               );
             })}
+
+            {/* Neural Subtitle Bar (Bottom Aligned) */}
+            <AnimatePresence>
+              {isTyping && activePersona && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  style={{
+                    gridColumn: 'span 2',
+                    width: '100%',
+                    padding: '1.25rem',
+                    background: 'rgba(0,0,0,0.85)',
+                    border: `1px solid ${activePersona.color}44`,
+                    borderTop: `2px solid ${activePersona.color}`,
+                    borderRadius: '12px',
+                    boxShadow: `0 -10px 40px ${activePersona.color}11`,
+                    backdropFilter: 'blur(10px)',
+                    zIndex: 20,
+                    marginTop: '2rem'
+                  }}
+                >
+                  <div style={{ 
+                    fontSize: '0.65rem', 
+                    fontWeight: 900, 
+                    color: activePersona.color, 
+                    marginBottom: '6px',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase'
+                  }}>
+                    {activePersona.name} // NEURAL_LINK_TRANSMISSION
+                  </div>
+                  <div style={{ 
+                    fontSize: '1rem', 
+                    lineHeight: '1.5',
+                    color: '#fff',
+                    fontWeight: 400,
+                    fontStyle: 'italic'
+                  }}>
+                    {history[history.length - 1]?.text}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Right: Chat & Controls */}

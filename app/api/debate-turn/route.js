@@ -1,10 +1,11 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
+import { NEURAL_KEY } from '@/lib/neural-config';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 45;
 
-const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+const groq = createGroq({ apiKey: process.env.GROQ_API_KEY || NEURAL_KEY });
 
 export async function POST(req) {
   const { topic, history, activePersona, plannerAngle, roundTheme, confidence = 75, mood = 'calm', userHeckle } = await req.json();
