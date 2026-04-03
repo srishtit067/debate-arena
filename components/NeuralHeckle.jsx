@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap } from 'lucide-react';
 
-export default function NeuralHeckle({ onHeckle, disabled, countdown, onSkip, isYourTurn }) {
+export default function NeuralHeckle({ onHeckle, disabled, countdown, onSkip, isYourTurn, onTypingChange }) {
   const [text, setText] = useState('');
 
   const handleSubmit = (e) => {
@@ -11,6 +11,13 @@ export default function NeuralHeckle({ onHeckle, disabled, countdown, onSkip, is
     if (!text.trim() || disabled) return;
     onHeckle(text.trim());
     setText('');
+    if (onTypingChange) onTypingChange(false);
+  };
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setText(val);
+    if (onTypingChange) onTypingChange(val.length > 0);
   };
 
   return (
@@ -73,7 +80,9 @@ export default function NeuralHeckle({ onHeckle, disabled, countdown, onSkip, is
             className="input-field"
             placeholder={isYourTurn ? "STATE YOUR ARGUMENT TO THE MACHINES..." : (disabled ? "WAITING FOR NEURAL SLOT..." : "TYPE CHALLENGE OR COMMAND...")}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={handleInputChange}
+            onFocus={() => { if (text.length > 0 && onTypingChange) onTypingChange(true); }}
+            onBlur={() => { if (onTypingChange) onTypingChange(false); }}
             disabled={disabled}
             autoFocus={isYourTurn}
             style={{

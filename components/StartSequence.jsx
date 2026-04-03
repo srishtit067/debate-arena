@@ -6,10 +6,10 @@ export default function StartSequence({ onComplete }) {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 1500);
-    const t2 = setTimeout(() => setPhase(2), 3000);
-    const t3 = setTimeout(() => setPhase(3), 4500);
-    const t4 = setTimeout(() => onComplete(), 5500);
+    const t1 = setTimeout(() => setPhase(1), 2500);
+    const t2 = setTimeout(() => setPhase(2), 5000);
+    const t3 = setTimeout(() => setPhase(3), 7500);
+    const t4 = setTimeout(() => onComplete(), 10000);
 
     return () => {
       clearTimeout(t1);

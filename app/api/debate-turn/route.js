@@ -33,18 +33,14 @@ ${historyText || '(Simulator initializing. Open with your primary thesis.)'}
 OPERATIONAL PROTOCOLS:
 1. ${userHeckle ? `MANDATORY: You MUST prioritize the rebuttal of "${userHeckle}". Start your response with a direct counter-point to the human.` : (lastSpeaker ? `MANDATORY: Directly acknowledge and rebut ${lastSpeaker} by name. Frame your logic as superior.` : 'Initialize with your core stance on the topic.')}
 2. Maintain the distinct persona of ${activePersona.name} at all times.
-3. Keep the response to 1-2 highly impactful sentences. No filler.
-4. FORMAT: You MUST start with a bracketed thinking block [tactical note], followed by a newline, followed by your spoken words.
-
-EXAMPLE:
-[NOTE: Expose the flaw in entropy logic to assert architectural superiority]
-Entrophy-X, your focus on decay ignores the structural resilience I represent; the system is designed to evolve, not just survive.`;
+3. BRIEF & PRECISE: Keep your response to 1-2 HIGH-IMPACT sentences of deep logical inquiry. Avoid long paragraphs; get straight to the point.
+4. FORMAT: You MUST start with a bracketed thinking block [tactical note], followed by a newline, followed by your spoken words.`;
 
   const result = await streamText({
     model: groq('llama-3.1-8b-instant'),
     system: systemMessage,
-    prompt: "Deliver your response.",
-    maxTokens: 180,
+    prompt: "Deliver your precise logical response to the council.",
+    maxTokens: 400,
   });
 
   return result.toTextStreamResponse();

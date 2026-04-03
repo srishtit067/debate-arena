@@ -22,9 +22,11 @@ export default function Home() {
   const [topicLocked, setTopicLocked] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | initializing | playing | paused | voting | judging | finished
   const [participationMode, setParticipationMode] = useState('watch'); // watch | interact
+  const [isUserTyping, setIsUserTyping] = useState(false);
   const [history, setHistory] = useState([]);
   const [turnIndex, setTurnIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef(null);
 
   // Multi-agent state
   const [confidences, setConfidences] = useState(() => {
@@ -82,12 +84,18 @@ export default function Home() {
   const activePersona = getActivePersona();
 
   // ─── Planner Agent ───────────────────────────────────────────
-  const callPlanner = useCallback(async (roundNum) => {
+  const callPlanner = useCallback(async (roundNum, roundScores) => {
     try {
       const res = await fetch('/api/planner', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, roundNumber: roundNum, roundScores: roundScoreHistory }),
+        body: JSON.stringify({ 
+          topic, 
+          roundNumber: roundNum, 
+          roundScores,
+          participationMode,
+          activePersonas
+        }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -135,7 +143,7 @@ export default function Home() {
       const res = await fetch('/api/critic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roundArguments: roundArgs }),
+        body: JSON.stringify({ roundArguments: roundArgs, roundTheme }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -428,33 +436,31 @@ export default function Home() {
         return;
       }
 
-      // Start of a new round: call planner first
-      const isNewRound = turnIndex % turnsPerRound === 0;
-      if (isNewRound) {
-        const rNum = Math.floor(turnIndex / turnsPerRound) + 1;
-        // Add a round marker to chat
-        setRoundMarkers(prev => {
-          const alreadyHas = prev.find(m => m.roundNumber === rNum);
-          if (alreadyHas) return prev;
-          return [...prev, { afterIndex: historyRef.current.length - 1, label: `Round ${rNum}${plannerData?.roundTheme ? ': ' + plannerData.roundTheme : ''}`, roundNumber: rNum }];
-        });
-        callPlanner(rNum).then(() => {
-          timeout = setTimeout(() => {
-            if (statusRef.current === 'playing') handleNextTurn();
-          }, 3000);
-        });
-        return;
-      }
+      // 3-SECOND READING BUFFER after every AI speech
+      timeout = setTimeout(() => {
+        if (statusRef.current !== 'playing') return;
+        
+        // Start of a new round: call planner first
+        const isNewRound = turnIndex % turnsPerRound === 0;
+        if (isNewRound) {
+          const rNum = Math.floor(turnIndex / turnsPerRound) + 1;
+          // Add a round marker to chat
+          setRoundMarkers(prev => {
+            const alreadyHas = prev.find(m => m.roundNumber === rNum);
+            if (alreadyHas) return prev;
+            return [...prev, { afterIndex: historyRef.current.length - 1, label: `Round ${rNum}${plannerData?.roundTheme ? ': ' + plannerData.roundTheme : ''}`, roundNumber: rNum }];
+          });
+          callPlanner(rNum, roundScoreHistory).then(() => {
+            timeout = setTimeout(() => {
+              if (statusRef.current === 'playing') handleNextTurn();
+            }, 3000);
+          });
+          return;
+        }
 
-      // End of a round or turn: Check for Interception Window
-      if (!isNewRound) {
+        // End of a turn: Check for Interception Window
         setHeckleCountdown(5);
-      } else {
-        // Round start already has its own planner delay
-        timeout = setTimeout(() => {
-          if (statusRef.current === 'playing') handleNextTurn();
-        }, 3000);
-      }
+      }, 3000); // Wait 3 seconds for human to read before starting any timer
     } else if (status === 'judging' && !isTyping) {
       timeout = setTimeout(() => { handleJudgeTurn(); }, 4000);
     }
@@ -462,10 +468,10 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [status, isTyping, turnIndex]);
 
-  // Interception Timer Countdown
+  // Interception Timer Countdown: PAUSABLE
   useEffect(() => {
     let interval;
-    if (status === 'playing' && heckleCountdown > 0) {
+    if (status === 'playing' && heckleCountdown > 0 && !isUserTyping) {
       interval = setInterval(() => {
         setHeckleCountdown(prev => {
           if (prev <= 1) {
@@ -477,7 +483,12 @@ export default function Home() {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [status, heckleCountdown, handleNextTurn]);
+  }, [status, heckleCountdown, isUserTyping, handleNextTurn]);
+
+  // Smooth Auto-scroll
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [history, isTyping]);
 
   // ─── End of each round: trigger critic ───────────────────────
   useEffect(() => {
@@ -648,22 +659,55 @@ export default function Home() {
               </p>
             </div>
 
-            <button className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }} onClick={() => {
+            {/* Neural Council Manifest */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ fontSize: '0.7rem', color: 'var(--primary)', letterSpacing: '0.2em', marginBottom: '1rem', opacity: 0.8 }}>NEURAL_COUNCIL_MANIFEST</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', maxWidth: '1000px', margin: '0 auto' }}>
+                {personas.map(p => (
+                  <div key={p.id} style={{ padding: '0.75rem', borderRadius: '12px', border: `1px solid ${p.color}44`, background: 'rgba(0,0,0,0.2)', textAlign: 'left' }}>
+                    <div style={{ color: p.color, fontWeight: 900, fontSize: '0.75rem', marginBottom: '4px' }}>{p.name}</div>
+                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{p.prompt.split('.')[0]}.</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', position: 'relative', overflow: 'hidden' }} onClick={() => {
               setTopicLocked(true);
               setStatus('initializing');
               if (audioRef.current) { audioRef.current.volume = 0.4; audioRef.current.play().catch(() => {}); }
-            }}>LAUNCH ARENA</button>
+            }}>
+              LAUNCH ARENA
+            </button>
           </div>
         ) : (
-          <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'rgba(0,240,255,0.05)', border: '1px solid var(--primary)', textAlign: 'center' }}>
-            <h3 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Active Directive</h3>
-            <p style={{ fontSize: '1.25rem', fontWeight: 600 }}>"{topic}"</p>
-            {plannerData && (
-              <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem', fontStyle: 'italic' }}>
-                Planner: {plannerData.instruction}
-              </p>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel" 
+            style={{ 
+              padding: '1.5rem', marginBottom: '2rem', background: 'rgba(0,240,255,0.05)', 
+              border: '1px solid var(--primary)', textAlign: 'center',
+              position: 'relative', overflow: 'hidden'
+            }}
+          >
+            {status === 'initializing' && (
+              <motion.div 
+                style={{ position: 'absolute', top: 0, left: 0, bottom: 0, background: 'var(--primary)', opacity: 0.1, zIndex: 0 }}
+                animate={{ width: ['0%', '100%'] }}
+                transition={{ duration: 3, ease: "easeInOut" }}
+              />
             )}
-          </div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <h3 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Active Directive</h3>
+              <p style={{ fontSize: '1.25rem', fontWeight: 600 }}>"{topic}"</p>
+              {plannerData && (
+                <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem', fontStyle: 'italic' }}>
+                  Planner: {plannerData.instruction}
+                </p>
+              )}
+            </div>
+          </motion.div>
         )}
 
         {/* Arena Layout */}
@@ -753,6 +797,7 @@ export default function Home() {
                 countdown={heckleCountdown}
                 onSkip={() => setHeckleCountdown(0)}
                 isYourTurn={status === 'waiting-for-user'}
+                onTypingChange={setIsUserTyping}
               />
             )}
 

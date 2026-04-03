@@ -4,29 +4,31 @@ import { createGroq } from '@ai-sdk/groq';
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req) {
-  const { roundArguments } = await req.json();
+  const { roundArguments, roundTheme } = await req.json();
 
-  const argsText = roundArguments.map(a => `${a.persona.name}: "${a.text}"`).join('\n\n');
+  const argsText = roundArguments.map(a => `${a.persona.name} (${a.persona.id}): "${a.text}"`).join('\n\n');
 
   const result = await generateText({
     model: groq('llama-3.1-8b-instant'),
-    system: `You are the Critic AI. Score each debater's argument from this round.
-Output ONLY valid JSON in this exact format with no extra text:
+    system: `You are the Neural Critic for the MULTI-MIND SIMULATOR. Your task is to objectively score the arguments from this round.
+Round Focus: ${roundTheme || 'General Debate'}
+
+Scoring Entities:
+- nova-zero, entropy-x, glitch-wit, logic-mainframe, user (Human).
+
+Scoring Metric (JSON):
 {
   "scores": {
-    "agentId": { "score": 0-100, "feedback": "one sentence", "fallacy": "name of fallacy or null" }
+    "participantId": { "score": 0-100, "feedback": "one sentence critique", "fallacy": "name of fallacy or null" }
   },
-  "mvp": "agentId of best performer this round"
+  "mvp": "participantId of the strongest contributor"
 }
 
-Scoring criteria:
-- Logic and coherence (40pts)
-- Use of evidence or reasoning (30pts)
-- Rebuttal quality (20pts)
-- Persona consistency (10pts)
-
-Fallacies to detect: "Ad Hominem", "Straw Man", "False Dichotomy", "Slippery Slope", "Appeal to Emotion", "Circular Reasoning", null if none.`,
-    prompt: `Score these round arguments:\n\n${argsText}`,
+Critical Guidelines:
+1. Logic (40pts), Evidence/Reasoning (30pts), Rebuttal Quality (20pts), Style (10pts).
+2. If identifying a fallacy, use standard logic terms (e.g., Slippery Slope, Ad Hominem).
+3. If the "user" is participating, judge them with the same cold objectivity as the machines.`,
+    prompt: `Deliberate and score these arguments:\n\n${argsText}`,
   });
 
   try {
