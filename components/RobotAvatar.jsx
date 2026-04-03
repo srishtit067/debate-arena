@@ -33,6 +33,30 @@ export default function RobotAvatar({ persona, isSpeaking, scratchpad, text, con
         width: '100%',
       }}
     >
+      {/* Neural Aura (Pulsing Glow) */}
+      <motion.div
+        animate={isSpeaking ? { 
+          scale: [1, 1.15, 1],
+          opacity: [0.1, 0.4, 0.1],
+          boxShadow: [
+            `0 0 40px ${persona.color}22`,
+            `0 0 100px ${persona.color}66`,
+            `0 0 40px ${persona.color}22`
+          ]
+        } : { opacity: 0.05 }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        style={{
+          position: 'absolute',
+          top: '-15%',
+          left: '-15%',
+          width: '130%',
+          height: '130%',
+          borderRadius: '50%',
+          zIndex: -1,
+          background: `radial-gradient(circle, ${persona.color}44 0%, transparent 70%)`
+        }}
+      />
+
       {/* Avatar Display Layer */}
       <motion.div
         style={{
@@ -47,6 +71,20 @@ export default function RobotAvatar({ persona, isSpeaking, scratchpad, text, con
         animate={{ scale: isSpeaking ? 1.15 : 0.9 }}
         transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
       >
+        {/* Cinematic Scanlines */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'repeating-linear-gradient(rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 2px)',
+          pointerEvents: 'none',
+          opacity: 0.4,
+          zIndex: 5,
+          borderRadius: '50%'
+        }} />
+
         <img 
           src={persona.id === 'user' 
             ? `https://api.dicebear.com/7.x/avataaars/svg?seed=HumanObserver&backgroundColor=00f0ff`

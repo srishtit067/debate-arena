@@ -5,6 +5,7 @@ import RobotAvatar from '@/components/RobotAvatar';
 import DebateChat from '@/components/DebateChat';
 import ControlPanel from '@/components/ControlPanel';
 import LiveWallpaper from '@/components/LiveWallpaper';
+import NeuralHUD from '@/components/NeuralHUD';
 import StartSequence from '@/components/StartSequence';
 import PDFGenerator from '@/components/PDFGenerator';
 import CriticPanel from '@/components/CriticPanel';
@@ -551,7 +552,8 @@ export default function Home() {
 
   return (
     <>
-      <LiveWallpaper />
+      <LiveWallpaper activeColor={activePersona?.color || '#00f0ff'} />
+      <NeuralHUD />
       <AnimatePresence>
         {status === 'initializing' && (
           <StartSequence onComplete={() => setStatus('playing')} />

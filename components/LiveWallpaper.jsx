@@ -1,8 +1,13 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-export default function LiveWallpaper() {
+export default function LiveWallpaper({ activeColor = '#00f0ff' }) {
   const canvasRef = useRef(null);
+  const colorRef = useRef(activeColor);
+
+  useEffect(() => {
+    colorRef.current = activeColor;
+  }, [activeColor]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -12,38 +17,40 @@ export default function LiveWallpaper() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const particles = [];
-    const particleCount = 120; // Number of floating orbs
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 240, 255';
+    };
 
-    // Initialize particles
+    const particles = [];
+    const particleCount = 140;
+
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: Math.random() * 2.5 + 0.5,
-        color: Math.random() > 0.5 ? '0, 240, 255' : '139, 92, 246',
-        opacity: Math.random() * 0.8 + 0.2
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 2 + 0.5,
+        opacity: Math.random() * 0.5 + 0.2
       });
     }
 
     const render = () => {
-      // Create a slight trailing effect for motion blur
-      ctx.fillStyle = 'rgba(5, 5, 5, 0.4)';
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.25)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Draw Connections (Neural Network Effect)
+      const currentRgb = hexToRgb(colorRef.current);
+
       for (let i = 0; i < particleCount; i++) {
         for (let j = i + 1; j < particleCount; j++) {
            const dx = particles[i].x - particles[j].x;
            const dy = particles[i].y - particles[j].y;
            const dist = Math.sqrt(dx*dx + dy*dy);
            
-           if (dist < 120) {
+           if (dist < 130) {
               ctx.beginPath();
-              // Line opacity gets stronger as they get closer
-              ctx.strokeStyle = `rgba(0, 240, 255, ${0.12 - dist/1000})`;
+              ctx.strokeStyle = `rgba(${currentRgb}, ${0.15 - dist/1200})`;
               ctx.lineWidth = 0.5;
               ctx.moveTo(particles[i].x, particles[i].y);
               ctx.lineTo(particles[j].x, particles[j].y);
@@ -52,22 +59,17 @@ export default function LiveWallpaper() {
         }
       }
 
-      // Draw and Move Particles
       particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Bounce off edges smoothly
+        p.x += p.vx; p.y += p.vy;
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
         ctx.beginPath();
-        ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
+        ctx.fillStyle = `rgba(${currentRgb}, ${p.opacity})`;
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = `rgba(${p.color}, 1)`;
+        ctx.shadowBlur = dist < 20 ? 20 : 5;
+        ctx.shadowColor = `rgba(${currentRgb}, 1)`;
         ctx.fill();
-        // Reset shadow to not mess up connections
         ctx.shadowBlur = 0;
       });
       
@@ -75,12 +77,7 @@ export default function LiveWallpaper() {
     };
 
     render();
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
+    const handleResize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     window.addEventListener('resize', handleResize);
 
     return () => {
@@ -90,17 +87,6 @@ export default function LiveWallpaper() {
   }, []);
 
   return (
-    <canvas 
-      ref={canvasRef} 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 0,
-        pointerEvents: 'none'
-      }} 
-    />
+    <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} />
   );
 }
