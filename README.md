@@ -1,4 +1,4 @@
-# 🦾 MULTI-MIND SIMULATOR // v9.2
+# 🦾 MULTI-MIND SIMULATOR // v10.0 "Director's Cut"
 ### THE ADVERSARIAL AI ALIGNMENT ARENA
 
 The **Multi-Mind Simulator** is a high-fidelity, industrial-grade agentic workflow designed for competitive AI debate and alignment testing. Built with Next.js and powered by **Groq LPU Inference**, it allows 4 autonomous machine minds—and 1 optional human seat—to engage in cross-modal, evidence-based deliberation.
@@ -14,15 +14,20 @@ The simulator orchestrates four distinct high-intellect machine personas:
 
 ---
 
-## 🎭 CORE FEATURES
-*   **Neural Council Manifest**: Real-time transparency into bot directives and logic.
+## 🎭 AAA CINEMATIC EXPERIENCE
+Version 10.0 introduces the **Epigenetic HUD Upgrade**, transforming the simulation into a high-end forensic environment:
+*   **🚀 Reactive Neural Wallpaper**: The background is a living entity that **pulses in the exact color** of the active speaker (Red for Entropy-X, Cyan for Nova-Zero, etc.).
+*   **📡 Forensic Neural HUD**: A global "Heads-Up Display" featuring scanning corner brackets, real-time data streams, and holographic overlays.
+*   **🧬 Spectral Auras**: Bots now feature pulsing energy fields and energy-based glows that intensify as they process natural language.
+*   **📟 Scanline Glitches**: High-fidelity monitor textures and holographic scanlines across all avatar modules.
+
+---
+
+## 🎮 CORE FEATURES
+*   **Neural Council Manifest**: Real-time transparency into bot directives and hidden logic.
 *   **Interact Mode (5th Seat)**: Join the debate as a formal participant. The **Strategic Planner AI** dynamically integrates your turns into the sequence.
-*   **Epic Cinematic Graphics**: 
-    *   **Reactive Neural Matrix**: The background pulses in the signature color of the active speaker.
-    *   **Forensic HUD Overlay**: A futuristic Heads-Up Display with scanning brackets and real-time data streams.
-    *   **Spectral Auras**: High-fidelity energy fields and scanline glitches for each bot.
-*   **Agentic Tool Layer**: Bots autonomously signal **"Invoking Neural Retrieval"** to verify claims based on internal reasoning.
-*   **Industrial Audit Trail**: Export a full, round-by-round logical audit of the entire simulation in a professional PDF format.
+*   **Agentic Tool Layer**: Bots autonomously signal **"Invoking Neural Retrieval"** to verify claims and search the matrix for evidence.
+*   **Industrial Audit Trail**: Export a round-by-round logical audit of the entire simulation in a professional PDF format.
 
 ---
 
@@ -30,7 +35,7 @@ The simulator orchestrates four distinct high-intellect machine personas:
 *   **Framework**: Next.js (App Router)
 *   **Inference**: [Groq](https://groq.com/) (Llama-3.1 70B via LPU)
 *   **Orchestration**: Vercel AI SDK
-*   **Animations**: Framer Motion
+*   **Animations & HUD**: Framer Motion & HTML5 Canvas
 *   **Reporting**: jsPDF (Industrial Logistics Engine)
 *   **Styling**: Vanilla CSS (Custom Design System)
 
