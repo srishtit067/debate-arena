@@ -349,11 +349,11 @@ export default function Home() {
     saveToHistory({
       topic,
       history: [...currentHistory, { persona: judgePersona, text: '', rawText: '', scratchpad: '' }],
-      status: 'finished',
-      criticResults,
       userVote,
       confidences,
-      roundMarkers
+      roundMarkers,
+      participationMode,
+      activePersonas
     });
   }, [criticResults, userVote, topic, confidences, roundMarkers]);
 
@@ -394,6 +394,7 @@ export default function Home() {
     setRoundMarkers(item.roundMarkers || []);
     setTopicLocked(true);
     setUserVote(item.userVote);
+    if (item.participationMode) setParticipationMode(item.participationMode);
   };
 
   const resetSimulation = () => {
@@ -534,51 +535,55 @@ export default function Home() {
           <motion.h1 
             className="text-gradient"
             style={{ 
-              fontSize: '4.5rem',
+              fontSize: '4.2rem',
               fontWeight: 950,
               textTransform: 'uppercase',
-              letterSpacing: '0.4em',
+              letterSpacing: '0.3em',
               lineHeight: 1,
               position: 'relative',
               display: 'inline-block',
-              filter: 'drop-shadow(0 0 15px rgba(0, 240, 255, 0.4))'
+              filter: 'drop-shadow(0 0 15px rgba(0, 240, 255, 0.4))',
+              whiteSpace: 'nowrap'
             }}
           >
-            {/* Main Title */}
+            {/* Main Title Cluster */}
             <motion.span
+              style={{ position: 'relative', zIndex: 2 }}
               animate={{ 
                 textShadow: [
-                  '2px 0 #ff00c1, -2px 0 #00fff9',
-                  '-2px 0 #ff00c1, 2px 0 #00fff9',
-                  '1px 0 #ff00c1, -1px 0 #00fff9'
+                  '2px 0 0 #ff00c1, -2px 0 0 #00fff9',
+                  '-2px 0 0 #ff00c1, 2px 0 0 #00fff9',
+                  '1px 0 0 #ff00c1, -1px 0 0 #00fff9',
+                  '0 0 0 #ff00c1, 0 0 0 #00fff9'
                 ],
-                x: [0, -2, 2, 0]
+                x: [0, -1, 1, 0]
               }}
-              transition={{ duration: 0.2, repeat: Infinity, repeatType: 'mirror', repeatDelay: 3 }}
+              transition={{ duration: 0.15, repeat: Infinity, repeatType: 'mirror', repeatDelay: 4 }}
             >
-              MULTI-MIND
-            </motion.span>
-            <br />
-            <motion.span 
-              style={{ fontSize: '2.5rem', letterSpacing: '0.8em', color: 'rgba(255,255,255,0.8)' }}
-              animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ duration: 4, repeat: Infinity }}
-            >
-              SIMULATOR
+              MULTI-MIND SIMULATOR
             </motion.span>
 
-            {/* Cinematic Scanner Beam */}
+            {/* Scanning Laser Beam */}
             <motion.div 
                style={{
                  position: 'absolute',
-                 top: 0, left: 0, width: '100%', height: '2px',
+                 left: 0, width: '100%', height: '3px',
                  background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
-                 boxShadow: '0 0 20px var(--primary)',
+                 boxShadow: '0 0 25px var(--primary)',
                  zIndex: 10
                }}
-               animate={{ top: ['0%', '110%', '0%'] }}
-               transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+               animate={{ top: ['-10%', '110%', '-10%'] }}
+               transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             />
+
+            {/* Background Static Layer */}
+            <motion.span
+               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, zIndex: 1, pointerEvents: 'none' }}
+               animate={{ opacity: [0.1, 0.2, 0.1] }}
+               transition={{ duration: 0.1, repeat: Infinity }}
+            >
+              MULTI-MIND SIMULATOR
+            </motion.span>
           </motion.h1>
 
           {/* Subtitle / Status */}

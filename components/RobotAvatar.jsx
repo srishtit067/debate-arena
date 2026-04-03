@@ -73,18 +73,37 @@ export default function RobotAvatar({ persona, isSpeaking, scratchpad, confidenc
 
       {/* Title block */}
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.25rem', width: '100%', alignItems: 'center' }}>
-        <motion.span 
-          style={{ 
-            color: isSpeaking ? persona.color : 'var(--text-muted)', 
-            fontWeight: 'bold',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            fontSize: '0.75rem'
-          }}
-          animate={{ textShadow: isSpeaking ? `0 0 15px ${persona.color}` : 'none' }}
-        >
-          {persona.name}
-        </motion.span>
+        <div style={{ position: 'relative' }}>
+          <motion.span 
+            style={{ 
+              color: isSpeaking ? persona.color : 'var(--text-muted)', 
+              fontWeight: 'bold',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              cursor: 'help'
+            }}
+            animate={{ textShadow: isSpeaking ? `0 0 15px ${persona.color}` : 'none' }}
+          >
+            {persona.name}
+          </motion.span>
+          
+          {/* Neural Profile Tooltip */}
+          <div className="tooltip" style={{ 
+            position: 'absolute', bottom: '150%', left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(0,0,0,0.95)', border: `1px solid ${persona.color}`,
+            padding: '10px', borderRadius: '8px', fontSize: '0.65rem', width: '200px',
+            zIndex: 100, opacity: 0, pointerEvents: 'none', transition: 'all 0.3s',
+            boxShadow: `0 0 20px ${persona.color}44`, backdropFilter: 'blur(10px)'
+          }}>
+            <div style={{ color: persona.color, fontWeight: 800, marginBottom: '4px', fontSize: '0.55rem' }}>NEURAL_PROFILE_DIRECTIVE:</div>
+            <div style={{ color: '#fff', lineHeight: 1.4 }}>{persona.prompt}</div>
+            <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: `6px solid ${persona.color}` }} />
+          </div>
+          <style jsx>{`
+            div:hover > .tooltip { opacity: 1; bottom: 160%; }
+          `}</style>
+        </div>
 
         {/* Confidence Bar */}
         <div style={{ width: '110px' }}>

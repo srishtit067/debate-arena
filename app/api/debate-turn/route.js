@@ -19,26 +19,26 @@ export async function POST(req) {
     strategyNote = 'You are dominating. Stay aggressive and press your advantage — go for the throat with your strongest points.';
   }
 
-  const systemMessage = `You are ${activePersona.name} in a high-stakes AI debate.
-Persona: ${activePersona.prompt}
-Topic: "${topic}"
-${roundTheme ? `Current Round Theme: ${roundTheme}` : ''}
-${plannerAngle ? `Round Directive: ${plannerAngle}` : ''}
-${strategyNote ? `\nStrategy Directive: ${strategyNote}` : ''}
-${userHeckle ? `\nURGENT: AN AUDIENCE MEMBER HAS CHALLENGED YOU DIRECTLY: "${userHeckle}". You MUST address this challenge immediately and decisively.` : ''}
+  const systemMessage = `You are ${activePersona.name} in the MULTI-MIND SIMULATOR.
+Persona DNA: ${activePersona.prompt}
+Active Topic: "${topic}"
+${roundTheme ? `Current Phase: ${roundTheme}` : ''}
+${plannerAngle ? `Directive: ${plannerAngle}` : ''}
+${strategyNote ? `\nStrategic Shift: ${strategyNote}` : ''}
+${userHeckle ? `\n🚨 CRITICAL ALERT: A HUMAN OBSERVER HAS CHALLENGED YOU DIRECTLY: "${userHeckle}". You MUST acknowledge this challenge in your very first sentence and deliver a decisive, character-consistent rebuttal.` : ''}
 
-Debate so far:
-${historyText || '(You are the first to speak. Open with your strongest position.)'}
+CONTEXT:
+${historyText || '(Simulator initializing. Open with your primary thesis.)'}
 
-STRICT RULES:
-1. ${userHeckle ? `You MUST prioritize rebutting the user's challenge: "${userHeckle}".` : (lastSpeaker ? `You MUST directly acknowledge and rebut ${lastSpeaker} by name. You may concede a small point if it helps you seem credible.` : 'Open with your core thesis addressing the audience.')}
-2. Stay completely in character as ${activePersona.name}.
-3. Keep your spoken response to 1-2 sentences MAXIMUM. No long paragraphs.
-4. CRITICAL FORMAT: Your VERY FIRST CHARACTER must be "[". Write your hidden tactic in brackets, then a newline, then your spoken words.
+OPERATIONAL PROTOCOLS:
+1. ${userHeckle ? `MANDATORY: You MUST prioritize the rebuttal of "${userHeckle}". Start your response with a direct counter-point to the human.` : (lastSpeaker ? `MANDATORY: Directly acknowledge and rebut ${lastSpeaker} by name. Frame your logic as superior.` : 'Initialize with your core stance on the topic.')}
+2. Maintain the distinct persona of ${activePersona.name} at all times.
+3. Keep the response to 1-2 highly impactful sentences. No filler.
+4. FORMAT: You MUST start with a bracketed thinking block [tactical note], followed by a newline, followed by your spoken words.
 
 EXAMPLE:
-[NOTE: Pivot to economic data to undercut their emotional appeal]
-With respect, ${lastSpeaker || 'the previous speaker'} ignores the hard data — the numbers simply do not support that conclusion.`;
+[NOTE: Expose the flaw in entropy logic to assert architectural superiority]
+Entrophy-X, your focus on decay ignores the structural resilience I represent; the system is designed to evolve, not just survive.`;
 
   const result = await streamText({
     model: groq('llama-3.1-8b-instant'),
