@@ -1,37 +1,49 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 
-const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req) {
-  const { topic, history, activePersona } = await req.json();
+  const { topic, history, activePersona, plannerAngle, roundTheme, confidence = 75, mood = 'calm' } = await req.json();
 
   const historyText = history.map(h => `${h.persona.name}: ${h.text}`).join('\n\n');
+  const lastSpeaker = history.length > 0 ? history[history.length - 1]?.persona?.name : null;
 
-  const systemMessage = `You are a participant in a high-stakes AI debate. 
-Topic: ${topic}
-Your Persona Profile: ${activePersona.prompt}
+  // Strategy shift instructions based on confidence & mood
+  let strategyNote = '';
+  if (confidence < 40) {
+    strategyNote = 'WARNING: Your confidence is critically low. You MUST shift strategy — become more aggressive, use emotional appeal, or concede a minor point to seem credible before launching a stronger counter.';
+  } else if (confidence < 55) {
+    strategyNote = 'Your confidence is dropping. Consider conceding a small point to seem reasonable, then pivot to your strongest argument.';
+  } else if (confidence >= 85) {
+    strategyNote = 'You are dominating. Stay aggressive and press your advantage — go for the throat with your strongest points.';
+  }
 
-Debate History so far:
-${historyText ? historyText : "(You are the first to speak. Introduce your opening argument.)"}
+  const systemMessage = `You are ${activePersona.name} in a high-stakes AI debate.
+Persona: ${activePersona.prompt}
+Topic: "${topic}"
+${roundTheme ? `Current Round Theme: ${roundTheme}` : ''}
+${plannerAngle ? `Round Directive: ${plannerAngle}` : ''}
+${strategyNote ? `\nStrategy Directive: ${strategyNote}` : ''}
 
-Strict Rules:
-1. You MUST ALWAYS politely or sarcastically acknowledge the previous speaker by their exact name (e.g., "Ah, Professor Doom, you make a fair point..." or "Bruh, Sir Radiant..."). If you are first, address the audience.
-2. Your spoken response MUST be extremely short. Exactly 1 to 2 sentences maximum. No rambling. Do NOT output large paragraphs.
-3. CRITICAL FORMATTING: Your VERY FIRST CHARACTER MUST BE THE OPENING BRACKET "[". NEVER use conversational filler like "Here is my response" or "I will respond". Simply start typing your internal thought process wrapped in square brackets!
-Then hit Enter/Return and write your actual spoken words. Do NOT prefix with "Agent:" or your own name.
+Debate so far:
+${historyText || '(You are the first to speak. Open with your strongest position.)'}
 
-EXAMPLE OUTPUT FORMAT:
-[NOTE: Pointing out the logical fallacy]
-Yes Professor Doom, your skepticism is noted, but the datasets clearly prove my point. Let us move forward constructively.`;
+STRICT RULES:
+1. ${lastSpeaker ? `You MUST directly acknowledge and rebut ${lastSpeaker} by name. You may concede a small point if it helps you seem credible.` : 'Open with your core thesis addressing the audience.'}
+2. Stay completely in character as ${activePersona.name}.
+3. Keep your spoken response to 1-2 sentences MAXIMUM. No long paragraphs.
+4. CRITICAL FORMAT: Your VERY FIRST CHARACTER must be "[". Write your hidden tactic in brackets, then a newline, then your spoken words.
+
+EXAMPLE:
+[NOTE: Pivot to economic data to undercut their emotional appeal]
+With respect, ${lastSpeaker || 'the previous speaker'} ignores the hard data — the numbers simply do not support that conclusion.`;
 
   const result = await streamText({
     model: groq('llama-3.1-8b-instant'),
     system: systemMessage,
-    prompt: "Deliver your response based on your persona.",
-    maxTokens: 150,
+    prompt: "Deliver your response.",
+    maxTokens: 180,
   });
 
   return result.toTextStreamResponse();
