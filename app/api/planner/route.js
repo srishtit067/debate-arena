@@ -12,20 +12,29 @@ export async function POST(req) {
 
   const result = await generateText({
     model: groq('llama-3.1-8b-instant'),
-    system: `You are the Debate Planner AI. Your job is to set the strategic angle for each round of a debate.
+    system: `You are the Debate Planner AI. Your job is to set the strategic angle and determine the optimal speaking order for each round of a high-stakes AI debate.
 Topic: "${topic}"
 Round Number: ${roundNumber}
 ${scoresText}
 
-Output ONLY valid JSON in this exact format with no extra text:
-{"angle": "short description of this round's focus angle", "roundTheme": "2-4 word round title", "instruction": "one sentence telling debaters what aspect to focus on this round"}
+Personas available:
+- optimist (Sir Radiant)
+- skeptic (Professor Doom)
+- comedy (Jester-Bot)
+- analyst (The Architect)
 
-Round themes should escalate in intensity each round. Examples:
-- Round 1: "Opening Salvos" (establish core positions)
-- Round 2: "The Evidence War" (focus on data and proof)
-- Round 3: "Ethical Frontiers" (moral and philosophical angles)
-- Round 4: "Personal Stakes" (who benefits/loses)
-- Round 5: "Final Reckoning" (closing strongest arguments)`,
+Output ONLY valid JSON in this exact format with no extra text:
+{
+  "angle": "short description of this round's focus angle", 
+  "roundTheme": "2-4 word round title", 
+  "instruction": "one sentence telling debaters what aspect to focus on this round",
+  "speakingOrder": ["id1", "id2", "id3", "id4"]
+}
+
+Order strategy:
+- Use IDs: optimist, skeptic, comedy, analyst.
+- Every ID must appear exactly once.
+- Experiment with different opening/closing strategies. (e.g., if a bot is losing, let them open to gain ground).`,
     prompt: `Generate the planner directive for round ${roundNumber}.`,
   });
 

@@ -50,8 +50,23 @@ export default function RobotAvatar({ persona, isSpeaking, scratchpad, confidenc
         <img 
           src={`https://api.dicebear.com/7.x/bottts/svg?seed=${persona.name.replace(/\s+/g,'')}`} 
           alt={persona.name}
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', zIndex: 2 }}
         />
+        {/* Neural Processing Pulse */}
+        {isSpeaking && (
+          <motion.div
+            style={{
+              position: 'absolute',
+              width: '120%',
+              height: '120%',
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${persona.color}44 0%, transparent 70%)`,
+              zIndex: 1,
+            }}
+            animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        )}
       </motion.div>
 
       {/* Title block */}

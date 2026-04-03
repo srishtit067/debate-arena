@@ -43,6 +43,7 @@ export default function Home() {
   const [roundScoreHistory, setRoundScoreHistory] = useState([]);
   const [roundMarkers, setRoundMarkers] = useState([]);
   const [userVote, setUserVote] = useState(null);
+  const [roundSpeakingOrder, setRoundSpeakingOrder] = useState([]);
   
   // History State
   const [historyItems, setHistoryItems] = useState([]);
@@ -57,9 +58,21 @@ export default function Home() {
   useEffect(() => { historyRef.current = history; }, [history]);
   useEffect(() => { isTypingRef.current = isTyping; }, [isTyping]);
 
-  const activePersona = personas[turnIndex % personas.length];
   const currentRound = Math.floor(turnIndex / TURNS_PER_ROUND) + 1;
   const isRoundEnd = turnIndex > 0 && turnIndex % TURNS_PER_ROUND === 0;
+
+  // Determine active persona based on dynamic round order
+  const getActivePersona = () => {
+    if (status === 'judging') return { id: 'judge', name: 'THE JUDGE AI', color: '#ffb700' };
+    const roundTurnIndex = turnIndex % TURNS_PER_ROUND;
+    if (roundSpeakingOrder && roundSpeakingOrder.length === TURNS_PER_ROUND) {
+      const pId = roundSpeakingOrder[roundTurnIndex];
+      return personas.find(p => p.id === pId) || personas[roundTurnIndex];
+    }
+    return personas[roundTurnIndex];
+  };
+
+  const activePersona = getActivePersona();
 
   // ─── Planner Agent ───────────────────────────────────────────
   const callPlanner = useCallback(async (roundNum) => {
@@ -72,6 +85,7 @@ export default function Home() {
       if (res.ok) {
         const data = await res.json();
         setPlannerData(data);
+        if (data.speakingOrder) setRoundSpeakingOrder(data.speakingOrder);
         return data;
       }
     } catch (e) { console.error('Planner error:', e); }
@@ -158,7 +172,10 @@ export default function Home() {
     setIsTyping(true);
 
     const currentHistory = historyRef.current;
-    const persona = personas[turnIndex % personas.length];
+    
+    // Dynamic persona retrieval
+    const persona = getActivePersona();
+    
     const conf = confidences[persona.id] || 75;
     const mood = moods[persona.id] || 'calm';
     const msgIndex = currentHistory.length;

@@ -76,10 +76,50 @@ export default function DebateChat({ messages, activePersona, isTyping, factChec
                 <span style={{ fontSize: '0.8rem', color: msg.persona?.color, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {isJudge ? '⚖️ ' : ''}{msg.persona?.name}
                 </span>
-                {factCheck && !isJudge && msg.text && (
-                  <FactCheckBadge verdict={factCheck.verdict} note={factCheck.note} />
+                {factCheck ? (
+                  <FactCheckBadge 
+                    verdict={factCheck.verdict} 
+                    note={factCheck.note} 
+                    searchSnippet={factCheck.searchSnippet}
+                    source={factCheck.source}
+                  />
+                ) : (
+                  !isJudge && msg.text && (
+                    <motion.div
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontWeight: 800, padding: '3px 10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', marginLeft: '8px' }}
+                    >
+                      NEURAL VERIFICATION...
+                    </motion.div>
+                  )
                 )}
               </div>
+
+              {/* Reasoning Block (CoT) */}
+              {msg.scratchpad && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'rgba(255,255,255,0.45)',
+                    fontStyle: 'italic',
+                    background: 'rgba(255,255,255,0.02)',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    borderLeft: `2px solid ${msg.persona?.color}33`,
+                    marginBottom: '10px',
+                    lineHeight: 1.4,
+                    display: 'flex',
+                    gap: '8px'
+                  }}
+                >
+                  <span style={{ color: msg.persona?.color, fontWeight: 800, fontSize: '0.6rem', marginTop: '2px' }}>THOUGHT</span>
+                  <span>{msg.scratchpad}</span>
+                </motion.div>
+              )}
+
               <div style={{ color: 'var(--text-main)', lineHeight: 1.6, fontSize: '1rem' }}>
                 {msg.text}
               </div>
