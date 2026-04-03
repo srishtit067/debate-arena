@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 
-export default function PDFGenerator({ topic, history }) {
+export default function PDFGenerator({ topic, history, criticResults, userVote }) {
   const [loading, setLoading] = useState(false);
 
   const downloadPDF = async () => {
@@ -11,7 +11,7 @@ export default function PDFGenerator({ topic, history }) {
       const res = await fetch('/api/debate-summary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, history })
+        body: JSON.stringify({ topic, history, criticResults, userVote })
       });
       
       if (!res.ok) throw new Error('Summary Generation Failed');
@@ -46,7 +46,7 @@ export default function PDFGenerator({ topic, history }) {
         yPos += 5;
       }
       
-      doc.save('Arena-Debate-Summary.pdf');
+      doc.save('Multi-Mind-Simulation-Report.pdf');
     } catch(e) {
       console.error("PDF generation error: ", e);
       alert("Error generating PDF summary. Check API limits.");

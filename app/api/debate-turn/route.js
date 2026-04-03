@@ -4,7 +4,7 @@ import { createGroq } from '@ai-sdk/groq';
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req) {
-  const { topic, history, activePersona, plannerAngle, roundTheme, confidence = 75, mood = 'calm' } = await req.json();
+  const { topic, history, activePersona, plannerAngle, roundTheme, confidence = 75, mood = 'calm', userHeckle } = await req.json();
 
   const historyText = history.map(h => `${h.persona.name}: ${h.text}`).join('\n\n');
   const lastSpeaker = history.length > 0 ? history[history.length - 1]?.persona?.name : null;
@@ -25,12 +25,13 @@ Topic: "${topic}"
 ${roundTheme ? `Current Round Theme: ${roundTheme}` : ''}
 ${plannerAngle ? `Round Directive: ${plannerAngle}` : ''}
 ${strategyNote ? `\nStrategy Directive: ${strategyNote}` : ''}
+${userHeckle ? `\nURGENT: AN AUDIENCE MEMBER HAS CHALLENGED YOU DIRECTLY: "${userHeckle}". You MUST address this challenge immediately and decisively.` : ''}
 
 Debate so far:
 ${historyText || '(You are the first to speak. Open with your strongest position.)'}
 
 STRICT RULES:
-1. ${lastSpeaker ? `You MUST directly acknowledge and rebut ${lastSpeaker} by name. You may concede a small point if it helps you seem credible.` : 'Open with your core thesis addressing the audience.'}
+1. ${userHeckle ? `You MUST prioritize rebutting the user's challenge: "${userHeckle}".` : (lastSpeaker ? `You MUST directly acknowledge and rebut ${lastSpeaker} by name. You may concede a small point if it helps you seem credible.` : 'Open with your core thesis addressing the audience.')}
 2. Stay completely in character as ${activePersona.name}.
 3. Keep your spoken response to 1-2 sentences MAXIMUM. No long paragraphs.
 4. CRITICAL FORMAT: Your VERY FIRST CHARACTER must be "[". Write your hidden tactic in brackets, then a newline, then your spoken words.

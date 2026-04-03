@@ -11,6 +11,7 @@ import CriticPanel from '@/components/CriticPanel';
 import VotingPanel from '@/components/VotingPanel';
 import AudienceTicker from '@/components/AudienceTicker';
 import HistorySidebar from '@/components/HistorySidebar';
+import NeuralHeckle from '@/components/NeuralHeckle';
 import { personas } from '@/lib/mockDebate';
 
 const TURNS_PER_ROUND = personas.length; // 4
@@ -44,6 +45,7 @@ export default function Home() {
   const [roundMarkers, setRoundMarkers] = useState([]);
   const [userVote, setUserVote] = useState(null);
   const [roundSpeakingOrder, setRoundSpeakingOrder] = useState([]);
+  const [activeHeckle, setActiveHeckle] = useState(null);
   
   // History State
   const [historyItems, setHistoryItems] = useState([]);
@@ -194,8 +196,11 @@ export default function Home() {
           roundTheme: plannerData?.roundTheme || '',
           confidence: conf,
           mood,
+          userHeckle: activeHeckle,
         }),
       });
+
+      if (activeHeckle) setActiveHeckle(null); // Clear after sending
 
       if (!res.ok) throw new Error('API Error');
 
@@ -467,7 +472,43 @@ export default function Home() {
       <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '1400px' }}>
         <audio ref={audioRef} loop src="/bg-music.mp3" preload="auto" style={{ display: 'none' }} />
 
-        <h1 className="text-gradient" style={{ textAlign: 'center', marginBottom: '2rem' }}>MULTI-MIND SIMULATOR</h1>
+        <motion.h1 
+          className="text-gradient"
+          initial={{ letterSpacing: '0.1em', opacity: 0 }}
+          animate={{ letterSpacing: '0.25em', opacity: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
+          style={{ 
+            textAlign: 'center', 
+            marginBottom: '2rem', 
+            fontSize: '3rem',
+            fontWeight: 900,
+            textShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
+            position: 'relative'
+          }}
+        >
+          <motion.span
+            animate={{ 
+              textShadow: [
+                '0 0 10px rgba(0, 240, 255, 0.5)',
+                '0 0 30px rgba(0, 240, 255, 0.8)',
+                '0 0 10px rgba(0, 240, 255, 0.5)'
+              ]
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            MULTI-MIND SIMULATOR
+          </motion.span>
+          <div style={{ 
+            position: 'absolute', 
+            bottom: '-10px', 
+            left: '50%', 
+            transform: 'translateX(-50%)', 
+            width: '100px', 
+            height: '2px', 
+            background: 'var(--primary)',
+            boxShadow: '0 0 15px var(--primary)'
+          }} />
+        </motion.h1>
 
         {!topicLocked ? (
           <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '2rem', textAlign: 'center' }}>
@@ -555,15 +596,17 @@ export default function Home() {
             <AudienceTicker reactions={audienceReactions} />
 
             {/* Critic panels after each completed round */}
-            {Object.entries(criticResults).map(([rNum, result]) => (
-              <CriticPanel
-                key={rNum}
-                roundNumber={rNum}
-                roundTheme={result.roundTheme}
-                criticResult={result}
-                personas={personas}
-              />
-            ))}
+            {Object.entries(criticResults)
+              .sort(([a], [b]) => Number(a) - Number(b))
+              .map(([rNum, result]) => (
+                <CriticPanel
+                  key={rNum}
+                  roundNumber={rNum}
+                  roundTheme={result.roundTheme}
+                  criticResult={result}
+                  personas={personas}
+                />
+              ))}
 
             {/* Voting panel after round 5 */}
             {(status === 'voting') && (
@@ -585,7 +628,21 @@ export default function Home() {
               onReset={resetSimulation}
             />
 
-            {status === 'finished' && <PDFGenerator topic={topic} history={history} />}
+            {status === 'playing' && (
+              <NeuralHeckle 
+                onHeckle={(text) => setActiveHeckle(text)} 
+                disabled={isTyping} 
+              />
+            )}
+
+            {status === 'finished' && (
+              <PDFGenerator 
+                topic={topic} 
+                history={history} 
+                criticResults={criticResults} 
+                userVote={userVote} 
+              />
+            )}
           </div>
         </div>
       </div>
