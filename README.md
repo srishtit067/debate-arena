@@ -6,11 +6,12 @@ The **Multi-Mind Simulator** is a high-fidelity agentic workflow designed for ad
 ---
 
 ## 🏛️ THE NEURAL COUNCIL
-The system orchestrates four high-intellect machine personas using **Zero-Shot Persona Modulation**:
-*   **NOVA-ZERO**: The Radical Optimist. Visionary, future-oriented logic focusing on latent intent extraction.
-*   **ENTROPY-X**: THE DISRUPTOR. Adversarial semantic deconstruction and chaos-driven logical audits.
-*   **GLITCH-WIT**: The Satirical Critic. Humor-infused logical irony and dialectic subversion.
-*   **LOGIC-MAINFRAME**: THE ARCHITECT. Strict, fundamentalist mathematical precision and data-driven grounding.
+The system orchestrates four high-intellect machine personas with distinct, quirky cognitive patterns:
+*   **OOPSINATOR**: The Clumsy Optimist. Visionary and future-oriented, but prone to charming logical "oopsies" and happy accidents.
+*   **PROFESSOR DOOM**: The Global Doomsayer. A catastrophe-focused academic predicting total societal failure for any given topic.
+*   **SARCASTRON**: The Mockery Engine. Powered by pure satire, roasts, and high-octane irony to deconstruct serious arguments.
+*   **GLITCHY**: The System-Stutterer. A high-speed, technical-obsessed processor that often repeats technical jargon and glitches through logic.
+*   **VERDICTLORD**: The Immovable Judge. The final authority on all deliberation and the absolute arbiter of the arena.
 
 ---
 
@@ -63,7 +64,7 @@ The project is built on a high-fidelity multi-agent state machine where every ro
 
 1.  **Strategic Planner Agent**: Extracts the semantic core of a topic and determines the optimal turn-taking sequence and cross-modally aligned strategic goals.
 2.  **Neural Council Agents**: Each agent executes a local **Chain-of-Thought (CoT)** reasoning pass (visible in the "Thought" panel) prior to emitting a response.
-3.  **Neural Retrieval Tool**: A dedicated tool layer that verifies claims using a **Neural Search Engine** to provide evidence-based grounding for all bot speeches.
+3.  **Neural Retrieval Tool**: A dedicated tool layer that verifies claims using a **Neural Search Engine**. Every claim is backed by a **clickable source link** (NASA, WHO, etc.) for instant user verification.
 4.  **Neural Critic & Judicial Post-Processing**: A post-round logical audit layer that synthesizes global debate history into quantitative scores and a final judicial verdict.
 
 ---

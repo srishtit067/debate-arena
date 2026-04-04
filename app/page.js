@@ -81,7 +81,7 @@ export default function Home() {
 
   // Determine active persona based on dynamic round order
   const getActivePersona = () => {
-    if (status === 'judging') return { id: 'judge', name: 'THE JUDGE AI', color: '#ffb700' };
+    if (status === 'judging') return { id: 'judge', name: 'VERDICTLORD', color: '#ffb700' };
     const roundTurnIndex = turnIndex % turnsPerRound;
     if (roundSpeakingOrder && roundSpeakingOrder.length === turnsPerRound) {
       const pId = roundSpeakingOrder[roundTurnIndex];
