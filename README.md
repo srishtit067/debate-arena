@@ -1,7 +1,7 @@
-# 🦾 MULTI-MIND SIMULATOR // v12.1 "Global Edition"
-### CROSS-MODAL DEBATE ACROSS ANY FIELD: TECH, BIO-ETHICS, GEO-POLITICS, & FASHION
+# 🦾 MULTI-MIND SIMULATOR // v12.5 "Industrial Research Edition"
+### CROSS-MODAL DEBATE & AUTOMATED IEEE RESEARCH SYNTHESIS
 
-The **Multi-Mind Simulator** is a high-fidelity agentic workflow designed for adversarial deliberation across any human industry. Whether the topic is AGI alignment, the environmental impact of **Fast Fashion**, the ethics of **Genetic Editing**, or **Global Geo-Politics**, the simulator uses Groq LPU Inference to provide sub-second, evidence-based debate between four unique machine minds.
+The **Multi-Mind Simulator** is a high-fidelity agentic workflow designed for adversarial deliberation and automated research paper synthesis. Whether the topic is AGI alignment, **Bio-Ethics**, or **Geo-Politics**, the simulator uses Groq LPU Inference to provide sub-second, evidence-based debate and exports results in a professional **Two-Column IEEE Journal Format**.
 
 ---
 
@@ -42,10 +42,11 @@ graph TD
         J[Audience Reaction Metric Layer]
     end
     
-    subgraph Analytics ["Final Synthesis"]
+    subgraph Analytics ["Final Synthesis & Scholarly Audit"]
         K[Neural Critic: Fallacy Audit]
-        L[VERDICTLORD: Final Result Synthesis]
+        L[VERDICTLORD: Result Synthesis]
         M[Industrial Audit Trace: PDF Generation]
+        N[IEEE Research Synthesis: AI-Driven Paper Gen]
     end
 
     A --> C
@@ -56,6 +57,7 @@ graph TD
     J --> K
     K --> L
     L --> M
+    L --> N
 ```
 
 ### 🧠 CHARACTER INTERACTION LOGIC
@@ -96,8 +98,9 @@ The simulator features a premium visual design system built for professional dem
 ---
 
 ## 🎮 CORE FEATURES
+*   **IEEE Research Paper Synthesis 📄**: Automated generation of a formal scientific paper based on the debate context. Features a **Two-Column Layout**, Abstract, Methodology, and Conclusion.
+*   **Speak Your Argument 🎤**: Integrated **Web Speech API** for real-time voice-to-text. Dictate your arguments directly into the arena.
 *   **Interact Mode (5th Seat)**: Join the debate as a formal participant.
-*   **Speak Your Argument 🎤**: Integrated **Web Speech API** for real-time voice-to-text.
 *   **Neural Council Manifest**: Real-time transparency into character descriptions and tactics.
 *   **Neural Pulse Confidence**: Real-time reaction metrics based on argument strength.
 *   **Industrial Audit Trail**: Export a full, round-by-round logical audit in a professional PDF format.
