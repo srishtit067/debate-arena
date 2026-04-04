@@ -1,7 +1,7 @@
-# 🦾 MULTI-MIND SIMULATOR // v12.0 "Engineering Edition"
-### HIGH-FIDELITY ADVERSARIAL AI DEBATE ORCHESTRATION
+# 🦾 MULTI-MIND SIMULATOR // v12.1 "Global Edition"
+### CROSS-MODAL DEBATE ACROSS ANY FIELD: TECH, BIO-ETHICS, GEO-POLITICS, & FASHION
 
-The **Multi-Mind Simulator** is a state-of-the-art agentic workflow designed for adversarial AI alignment and logical stress-testing. Built with **Next.js 16** and powered by **Groq LPU Inference**, it leverages a multi-agent architecture to simulate high-stakes deliberation between four unique machine personas and a human participant.
+The **Multi-Mind Simulator** is a high-fidelity agentic workflow designed for adversarial deliberation across any human industry. Whether the topic is AGI alignment, the environmental impact of **Fast Fashion**, the ethics of **Genetic Editing**, or **Global Geo-Politics**, the simulator uses Groq LPU Inference to provide sub-second, evidence-based debate between four unique machine minds.
 
 ---
 
