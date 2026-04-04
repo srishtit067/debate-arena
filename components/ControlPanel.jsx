@@ -32,22 +32,22 @@ export default function ControlPanel({ status, onPlayPause, onNext, isTyping, on
         </button>
       </div>
 
-      {status === 'debating' && (
+      {(status === 'playing' || status === 'paused' || status === 'waiting-for-user') && (
         <button 
           className="btn" 
           style={{ 
             width: '100%', 
             padding: '0.75rem', 
-            background: 'rgba(255, 68, 68, 0.1)', 
-            border: '1px solid rgba(255, 68, 68, 0.3)', 
-            color: '#ff4444',
-            fontSize: '0.7rem',
-            fontWeight: 800,
+            background: 'rgba(0, 240, 255, 0.1)', 
+            border: '1px solid rgba(0, 240, 255, 0.3)', 
+            color: '#00f0ff',
+            fontSize: '0.75rem',
+            fontWeight: 900,
             letterSpacing: '0.1em'
           }} 
           onClick={onEndDebate}
         >
-          TERMINATE SIMULATION ⚡
+          SKIP TO RESULTS ⏭️
         </button>
       )}
     </div>

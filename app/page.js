@@ -808,8 +808,6 @@ export default function Home() {
                     background: 'rgba(0,0,0,0.85)',
                     border: `1px solid ${activePersona.color}44`,
                     borderTop: `2px solid ${activePersona.color}`,
-                    borderRadius: '12px',
-                    boxShadow: `0 -10px 40px ${activePersona.color}11`,
                     backdropFilter: 'blur(10px)',
                     zIndex: 20,
                     marginTop: '2rem'
@@ -882,6 +880,7 @@ export default function Home() {
               onNext={manuallyNext}
               isTyping={isTyping}
               onReset={resetSimulation}
+              onEndDebate={() => setStatus('finished')}
             />
 
             {(status === 'playing' || status === 'waiting-for-user') && (
