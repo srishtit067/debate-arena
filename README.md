@@ -23,28 +23,23 @@ Version 10.0 introduces the **Epigenetic HUD Upgrade**, transforming the simulat
 
 ---
 
-## 🗺️ NEURAL WORKFLOW
-The simulator follows a strictly orchestrated agentic sequence to ensure logical integrity and adversarial depth:
+## 🗺️ TECHNICAL ARCHITECTURE
+The simulator follows a highly structured, modular, and linear agentic workflow:
 
 ```mermaid
-graph TD
-    A[Topic Setup / Mode Selection] --> B[Neural Sync Sequence]
-    B --> C[Neural Strategy Planner]
-    C --> D{Turn-Based Debate Loop}
-    D --> E[Council Persona Response]
-    E --> F[Internal Reasoning / CoT]
-    F --> G[Neural Retrieval Tool]
-    G --> H[Audience Response / Pulse]
-    H --> I[Human Interaction]
-    I --> D
-    D --> J[Neural Logic Critic]
-    J --> K[User Voting Phase]
-    K --> L[Grand Judge AI Verdict]
-    L --> M[Industrial Audit Trail: PDF]
+graph LR
+    A[Topic Setup] --> B[Strategic Planner]
+    B --> C[Neural Sync Queue]
+    C --> D[Council Execution]
+    D --> E[Internal Reasoning]
+    E --> F[Neural Retrieval Tool]
+    F --> G[Fact-Check Engine]
+    G --> H[Final Judge Verdict]
+    H --> I[PDF Audit Log]
 ```
 
 > [!TIP]
-> **Neural Architecture Map**: [Download the high-resolution cinematic workflow diagram here](public/assets/workflow.png).
+> **Neural Architecture Map**: [Download the professional whitepaper architecture diagram here](public/assets/crisp_architecture.png).
 
 ---
 
