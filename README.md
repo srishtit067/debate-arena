@@ -5,6 +5,10 @@ The **Multi-Mind Simulator** is a high-fidelity agentic workflow designed for ad
 
 ---
 
+### 📺 **[LIVE VIDEO DEMO](https://www.loom.com/share/1f43dfebea7b4892948928d96c0cdb3b)**
+
+---
+
 ## 🏛️ THE NEURAL COUNCIL
 The system orchestrates four high-intellect machine personas with distinct, quirky cognitive patterns:
 *   **OOPSINATOR**: The Clumsy Optimist. Visionary and future-oriented, but prone to charming logical "oopsies."
