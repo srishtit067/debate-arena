@@ -13,7 +13,7 @@ export async function POST(req) {
     system: `You are the Neural Search Tool for the Multi-Mind Simulator.
 Your job is to identify the MOST verifiable claim in an argument and return a snippet of "simulated data" or a "source" to verify it.
 Output ONLY valid JSON in this format:
-{"claim": "the found claim", "searchQuery": "query used", "dataFound": "1-sentence factual snippet", "source": "e.g. Global Ethics Database, 2024"}`,
+{"claim": "the found claim", "searchQuery": "query used", "dataFound": "1-sentence factual snippet", "source": "e.g. NASA Earth Observatory", "sourceUrl": "e.g. https://earthobservatory.nasa.gov"}`,
     prompt: `Analyze this argument from ${personaName}: "${argument}"`,
   });
 
@@ -21,7 +21,7 @@ Output ONLY valid JSON in this format:
   try {
     toolData = JSON.parse(searchResult.text.trim());
   } catch (e) {
-    toolData = { claim: "general argument", dataFound: "Data correlates with logical consensus.", source: "Simulator Core" };
+    toolData = { claim: "general argument", dataFound: "Data correlates with logical consensus.", source: "Simulator Core", sourceUrl: "https://groq.com" };
   }
 
   // Step 2: Use the "Tool Data" to generate a final verdict
@@ -31,7 +31,7 @@ Output ONLY valid JSON in this format:
 You have been provided with "Search Tool Results" for a specific claim.
 Use this tool data to provide a definitive verdict.
 Output ONLY valid JSON:
-{"verdict": "STRONG" | "WEAK" | "FALLACY", "note": "max 10 word explanation", "searchSnippet": "the data found", "source": "the source"}`,
+{"verdict": "STRONG" | "WEAK" | "FALLACY", "note": "max 10 word explanation", "searchSnippet": "the data found", "source": "the source", "sourceUrl": "clickable url"}`,
     prompt: `Argument: "${argument}"
 Search Tool Data: ${JSON.stringify(toolData)}`,
   });
@@ -44,7 +44,8 @@ Search Tool Data: ${JSON.stringify(toolData)}`,
       verdict: 'STRONG', 
       note: 'Argument appears valid based on neural search.',
       searchSnippet: toolData.dataFound,
-      source: toolData.source
+      source: toolData.source,
+      sourceUrl: toolData.sourceUrl
     });
   }
 }

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const COLORS = { STRONG: '#00ff88', WEAK: '#ffb700', FALLACY: '#ff4444' };
 const ICONS = { STRONG: '✓', WEAK: '⚠', FALLACY: '✗' };
 
-export default function FactCheckBadge({ verdict, note, searchSnippet, source }) {
+export default function FactCheckBadge({ verdict, note, searchSnippet, source, sourceUrl }) {
   if (!verdict) return null;
   const color = COLORS[verdict] || '#aaa';
   
@@ -40,7 +40,27 @@ export default function FactCheckBadge({ verdict, note, searchSnippet, source })
       {source && (
         <div style={{ borderLeft: `1px solid ${color}33`, paddingLeft: '6px', display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
           <span style={{ fontSize: '0.55rem', opacity: 0.8, marginBottom: '1px' }}>SOURCE</span>
-          <span style={{ fontSize: '0.6rem', color: '#fff', opacity: 0.7 }}>{source.toUpperCase()}</span>
+          {sourceUrl ? (
+            <a 
+              href={sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                fontSize: '0.6rem', 
+                color: '#fff', 
+                opacity: 0.7, 
+                textDecoration: 'none',
+                borderBottom: '1px solid transparent',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => { e.target.style.opacity = 1; e.target.style.borderBottomColor = 'rgba(255,255,255,0.4)'; }}
+              onMouseLeave={e => { e.target.style.opacity = 0.7; e.target.style.borderBottomColor = 'transparent'; }}
+            >
+              {source.toUpperCase()} ↗
+            </a>
+          ) : (
+            <span style={{ fontSize: '0.6rem', color: '#fff', opacity: 0.7 }}>{source.toUpperCase()}</span>
+          )}
         </div>
       )}
     </motion.div>

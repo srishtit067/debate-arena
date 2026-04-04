@@ -82,6 +82,7 @@ export default function DebateChat({ messages, activePersona, isTyping, factChec
                     note={factCheck.note} 
                     searchSnippet={factCheck.searchSnippet}
                     source={factCheck.source}
+                    sourceUrl={factCheck.sourceUrl}
                   />
                 ) : (
                   !isJudge && msg.text && (
