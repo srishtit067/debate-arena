@@ -1,43 +1,46 @@
 # 🦾 AI Debate Arena
-### WATCH AI BOTS ARGUE, JOIN THE DEBATE, AND VOTE ON THE WINNER.
+### THE MULTI-AGENT ADVERSARIAL SIMULATOR
 
-The **AI Debate Arena** lets you choose any topic and watch four unique AI robots deliberate and argue with each other. You can participate in the conversation, fact-check their claims, and decide who wins.
+The **AI Debate Arena** is an agentic platform where specialized AI agents deliberate, argue, and verify claims in a high-fidelity environment. You can watch the four machine personas, join as a human participant, and audit the final results.
 
 ---
 
-## 🏛️ THE DEBATERS
-Four distinct machine personalities argue based on their own logic:
-*   **NOVA-ZERO**: Always sees the positive, visionary side.
-*   **ENTROPY-X**: Always challenges what others say and looks for flaws.
-*   **GLITCH-WIT**: Makes jokes while making serious points.
-*   **LOGIC-MAINFRAME**: Strict and follows the data.
+## 🏛️ THE NEURAL COUNCIL
+Four distinct AI agents (LLM Personas) debate based on their unique logic:
+*   **NOVA-ZERO**: The Radical Optimist.
+*   **ENTROPY-X**: The Adversarial Disruptor.
+*   **GLITCH-WIT**: The Satirical Critic.
+*   **LOGIC-MAINFRAME**: The Logical Architect.
+
+---
+
+## 🧠 THE AGENTIC ENGINE
+The project is built on a structured multi-agent workflow to ensure a "proper" and high-quality debate:
+
+1.  **Strategic Planner Agent**: Analyzes the topic and determines the optimal turn-taking sequence and strategic goals.
+2.  **Neural Council Agents**: The four debaters. They use **Chain-of-Thought (CoT)** reasoning (visible in the "Thought" panel) before speaking.
+3.  **Neural Retrieval Agent**: Automatically fact-checks claims using a specialized search tool to verify accuracy.
+4.  **Neural Critic Agent**: Audits every round for logical fallacies and provides quantitative scores.
+5.  **Final Judge Agent**: Synthesizes the entire debate history and user votes to deliver the final verdict.
 
 ---
 
 ## 🗺️ HOW IT WORKS
-The app follows a simple process to make the debate feel real:
+A simple look at the agentic process:
 
 ```mermaid
 graph LR
-    A[1. Choose Topic] --> B[2. AI Plans the Order]
-    B --> C[3. Bots Take Turns Speaking]
-    C --> D[4. App Checks if Claims are True]
-    D --> E[5. You can Join or Heckle]
-    E --> F[6. You Vote for the Winner]
-    F --> G[7. Final AI Verdict & PDF Summary]
+    A[Topic Setup] --> B[Planner Agent]
+    B --> C[Neural Council Agents]
+    C --> D[Fact-Check Agent]
+    D --> E[Critic Agent]
+    E --> F[Human Voting]
+    F --> G[Judge Agent]
+    G --> H[Final PDF Report]
 ```
 
 > [!TIP]
-> **View Simple Flow Map**: [Click here to see the 5-step process diagram](public/assets/simple_flow.png).
-
----
-
-## 🎮 CORE FEATURES
-*   **Real-Time Debate**: Watch bots argue dynamically with each other.
-*   **Join the Seat**: You can choose "Interact Mode" to join as a 5th speaker.
-*   **Hidden Thinking**: See the "Tactic" each bot uses before they speak.
-*   **Fact-Checking**: The app automatically runs a check on all bot claims.
-*   **Audit Trail**: Download a professional PDF summary of the debate at the end.
+> **View Process Map**: [Click here to see a simple 5-step diagram](public/assets/simple_flow.png).
 
 ---
 
@@ -46,8 +49,7 @@ graph LR
 ### 1. Prerequisites
 You need a **Groq API Key**. Get one at [console.groq.com](https://console.groq.com/).
 
-### 2. Setup
-Create a `.env.local` file and add your key:
+### 2. Setup (.env.local)
 ```bash
 GROQ_API_KEY=your_key_here
 ```
@@ -61,4 +63,4 @@ Open **[http://localhost:3000](http://localhost:3000)**.
 
 ---
 
-**NEURAL LOGIC READY. START THE ARENA.** 🦾🚀🎬
+**NEURAL LOGIC AUTHENTICATED. START THE ARENA.** 🦾🚀🎬
