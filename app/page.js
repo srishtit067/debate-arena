@@ -694,7 +694,7 @@ export default function Home() {
                 {personas.map(p => (
                   <div key={p.id} style={{ padding: '0.75rem', borderRadius: '12px', border: `1px solid ${p.color}44`, background: 'rgba(0,0,0,0.2)', textAlign: 'left' }}>
                     <div style={{ color: p.color, fontWeight: 900, fontSize: '0.75rem', marginBottom: '4px' }}>{p.name}</div>
-                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{p.prompt.split('.')[0]}.</div>
+                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{p.description}</div>
                   </div>
                 ))}
               </div>
