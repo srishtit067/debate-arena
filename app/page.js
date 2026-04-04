@@ -536,6 +536,12 @@ export default function Home() {
     setStatus(prev => prev === 'playing' ? 'paused' : 'playing');
   };
 
+  const endDebate = () => {
+    if (status === 'debating') {
+      setStatus('judging');
+    }
+  };
+
   const manuallyNext = () => {
     if (!topicLocked) setTopicLocked(true);
     setStatus('paused');
