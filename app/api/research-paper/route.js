@@ -37,10 +37,15 @@ Rules:
       prompt: `Synthesize this debate into an IEEE Research Paper: ${historyText}`,
     });
 
-    const parsed = JSON.parse(result.text.trim());
+    const rawText = result.text.trim();
+    // Use regex to extract JSON if it's trapped in markdown backticks
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    const jsonContent = jsonMatch ? jsonMatch[0] : rawText;
+
+    const parsed = JSON.parse(jsonContent);
     return Response.json(parsed);
   } catch (e) {
     console.error("Research synthesis error:", e);
-    return Response.json({ error: "Failed to synthesize paper" }, { status: 500 });
+    return Response.json({ error: "Failed to synthesize paper", details: e.message }, { status: 500 });
   }
 }
