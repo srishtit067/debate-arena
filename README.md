@@ -23,6 +23,31 @@ Version 10.0 introduces the **Epigenetic HUD Upgrade**, transforming the simulat
 
 ---
 
+## 🗺️ NEURAL WORKFLOW
+The simulator follows a strictly orchestrated agentic sequence to ensure logical integrity and adversarial depth:
+
+```mermaid
+graph TD
+    A[Topic Setup / Mode Selection] --> B[Neural Sync Sequence]
+    B --> C[Neural Strategy Planner]
+    C --> D{Turn-Based Debate Loop}
+    D --> E[Council Persona Response]
+    E --> F[Internal Reasoning / CoT]
+    F --> G[Neural Retrieval Tool]
+    G --> H[Audience Response / Pulse]
+    H --> I[Human Interaction]
+    I --> D
+    D --> J[Neural Logic Critic]
+    J --> K[User Voting Phase]
+    K --> L[Grand Judge AI Verdict]
+    L --> M[Industrial Audit Trail: PDF]
+```
+
+> [!TIP]
+> **Neural Architecture Map**: [Download the high-resolution cinematic workflow diagram here](public/assets/workflow.png).
+
+---
+
 ## 🎮 CORE FEATURES
 *   **Neural Council Manifest**: Real-time transparency into bot directives and hidden logic.
 *   **Interact Mode (5th Seat)**: Join the debate as a formal participant. The **Strategic Planner AI** dynamically integrates your turns into the sequence.
