@@ -13,7 +13,6 @@ import VotingPanel from '@/components/VotingPanel';
 import AudienceTicker from '@/components/AudienceTicker';
 import HistorySidebar from '@/components/HistorySidebar';
 import NeuralHeckle from '@/components/NeuralHeckle';
-import TrendingDebates from '@/components/TrendingDebates';
 import { personas, humanPersona } from '@/lib/mockDebate';
 
 const TOTAL_ROUNDS = 5;
@@ -631,81 +630,99 @@ export default function Home() {
         </motion.div>
 
         {!topicLocked ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              style={{
-                width: '100%',
-                maxWidth: '600px',
-                background: 'rgba(15, 15, 20, 0.7)',
-                padding: '3rem',
-                borderRadius: '24px',
-                border: '1px solid rgba(0, 240, 255, 0.15)',
-                backdropFilter: 'blur(30px)',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1.5rem'
-              }}
-            >
-              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textAlign: 'center', color: 'var(--primary)', letterSpacing: '0.2rem' }}>
-                NEURAL_COUNCIL_MANIFEST[v12.0]
-              </h1>
-              <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                Initialize adversarial semantic protocol. Enter simulation coordinates.
-              </p>
-              
-              <div style={{ position: 'relative' }}>
-                <input 
-                  type="text" 
-                  value={topic} 
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Enter Debate Coordinates (Example: AI Alignment...)"
-                  style={{
-                    width: '100%',
-                    padding: '1.2rem 1.5rem',
-                    background: 'rgba(0,0,0,0.4)',
-                    border: '1px solid rgba(0, 240, 255, 0.3)',
-                    borderRadius: '12px',
-                    color: 'white',
-                    fontSize: '1rem',
-                    outline: 'none',
-                    transition: 'all 0.3s ease'
+          <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '2rem', textAlign: 'center' }}>
+            <h2 style={{ marginBottom: '1rem', fontWeight: 500 }}>Enter Debate Directive</h2>
+            <input
+              type="text"
+              className="input-field"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              disabled={topicLocked}
+              style={{ maxWidth: '600px', marginBottom: '1rem', textAlign: 'center', fontSize: '1.1rem' }}
+            />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', maxWidth: '750px', margin: '0 auto 1.5rem auto' }}>
+              {[
+                "Should humanity merge with AI or remain biological?",
+                "Is 'Fast Fashion' a democratizing force or an environmental catastrophe?",
+                "Should genetic editing be used to 'design' future generations?",
+                "Is the obsession with celebrity private lives destroying artistic integrity?",
+                "Should the UN have a standing army to enforce global peace?",
+                "Is life extension technology ethical if it creates a permanent elite?",
+                "Should influencers be held to the same legal standards as journalists?",
+                "Is the rise of digital currencies a threat to national sovereignty?"
+              ].map((t, idx) => (
+                <button key={idx} onClick={() => setTopic(t)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-muted)', padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s' }}
+                  onMouseOver={e => { e.target.style.background = 'rgba(0,240,255,0.1)'; e.target.style.color = 'var(--primary)'; e.target.style.borderColor = 'var(--primary)'; }}
+                  onMouseOut={e => { e.target.style.background = 'rgba(255,255,255,0.05)'; e.target.style.color = 'var(--text-muted)'; e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                >{t}</button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <button 
+                  onClick={() => setParticipationMode('watch')}
+                  style={{ 
+                    padding: '8px 24px', borderRadius: '25px', fontSize: '0.8rem', fontWeight: 700,
+                    background: participationMode === 'watch' ? 'var(--primary)' : 'transparent',
+                    color: participationMode === 'watch' ? '#000' : 'var(--text-muted)',
+                    transition: 'all 0.3s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-                />
+                >
+                  WATCH MODE
+                </button>
+                <button 
+                  onClick={() => setParticipationMode('interact')}
+                  style={{ 
+                    padding: '8px 24px', borderRadius: '25px', fontSize: '0.8rem', fontWeight: 700,
+                    background: participationMode === 'interact' ? 'var(--primary)' : 'transparent',
+                    color: participationMode === 'interact' ? '#000' : 'var(--text-muted)',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  INTERACT MODE
+                </button>
               </div>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>
+                {participationMode === 'watch' ? "Observe the 4 machine minds battle. You can still interject manually." : "You join as a 5th seat. The machines will wait for your formal turn."}
+              </p>
+            </div>
 
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => topic.trim() && setStatus('initializing')}
-                style={{
-                  width: '100%',
-                  padding: '1.2rem',
-                  background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-                  border: 'none',
-                  borderRadius: '12px',
-                  color: 'white',
-                  fontWeight: 900,
-                  fontSize: '1.1rem',
-                  cursor: 'pointer',
-                  letterSpacing: '0.1rem',
-                  textTransform: 'uppercase',
-                  boxShadow: '0 10px 25px rgba(0, 240, 255, 0.3)'
-                }}
-              >
-                INITIALIZE_ARENA
-              </motion.button>
-            </motion.div>
+            {/* Neural Council Manifest */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ fontSize: '0.7rem', color: 'var(--primary)', letterSpacing: '0.2em', marginBottom: '1rem', opacity: 0.8 }}>NEURAL_COUNCIL_MANIFEST</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', maxWidth: '1000px', margin: '0 auto' }}>
+                {personas.map(p => (
+                  <div key={p.id} style={{ padding: '0.75rem', borderRadius: '12px', border: `1px solid ${p.color}44`, background: 'rgba(0,0,0,0.2)', textAlign: 'left' }}>
+                    <div style={{ color: p.color, fontWeight: 900, fontSize: '0.75rem', marginBottom: '4px' }}>{p.name}</div>
+                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{p.prompt.split('.')[0]}.</div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            <TrendingDebates onTopicSelect={(t) => {
-              setTopic(t);
+            {/* Neural Health Status */}
+            <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <span style={{ color: 'var(--text-muted)' }}>NEURAL_CORE_LINK:</span>
+              <div style={{ 
+                width: '10px', height: '10px', borderRadius: '50%', 
+                background: neuralStatus === 'connected' ? '#00f0ff' : neuralStatus === 'disconnected' ? '#ff4444' : '#ffb700',
+                boxShadow: `0 0 10px ${neuralStatus === 'connected' ? '#00f0ff' : neuralStatus === 'disconnected' ? '#ff4444' : '#ffb700'}`,
+                transition: 'all 0.5s'
+              }} />
+              <span style={{ color: neuralStatus === 'connected' ? '#00f0ff' : neuralStatus === 'disconnected' ? '#ff4444' : '#ffb700' }}>
+                {neuralStatus === 'connected' ? 'CONNECTED' : neuralStatus === 'disconnected' ? 'OFFLINE (Check API Key)' : 'SYNCHRONIZING...'}
+              </span>
+            </div>
+
+            <button className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', position: 'relative', overflow: 'hidden' }} 
+              disabled={neuralStatus !== 'connected'}
+              onClick={() => {
+              setTopicLocked(true);
               setStatus('initializing');
-            }} />
+              if (audioRef.current) { audioRef.current.volume = 0.4; audioRef.current.play().catch(() => {}); }
+            }}>
+              LAUNCH ARENA
+            </button>
           </div>
         ) : (
           <motion.div 

@@ -70,9 +70,8 @@ The project is built on a high-fidelity multi-agent state machine where every ro
 
 ## 🎭 AAA CINEMATIC UX
 The simulator features a premium visual design system built for professional demonstration:
-*   **🚀 Reactive Neural Wallpaper**: A living background that **pulses in the color** of the active speaker.
-*   **⚡ Live Trending Engine**: Fetches real-world headlines and transforms them into adversarial debate topics in real-time.
-*   **📡 Forensic Neural HUD**: A global "Heads-Up Display" with scanning brackets and real-time data streams.
+*   **🚀 Reactive Neural Wallpaper**: A living background that **pulses in the color** of the active speaker (Red for Entropy-X, Cyan for Nova-Zero, etc.).
+*   **📡 Forensic Neural HUD**: A global "Heads-Up Display" with scanning brackets and real-time data streams for an immersive forensic feel.
 *   **🧬 Spectral Auras**: Pulsing energy fields and energy-based glows that intensify as bots process natural language.
 *   **📟 scanline Glitches**: High-fidelity monitor textures and holographic scanlines across all modules.
 
