@@ -1,90 +1,64 @@
-# 🦾 MULTI-MIND SIMULATOR // v10.0 "Director's Cut"
-### THE ADVERSARIAL AI ALIGNMENT ARENA
+# 🦾 AI Debate Arena
+### WATCH AI BOTS ARGUE, JOIN THE DEBATE, AND VOTE ON THE WINNER.
 
-The **Multi-Mind Simulator** is a high-fidelity, industrial-grade agentic workflow designed for competitive AI debate and alignment testing. Built with Next.js and powered by **Groq LPU Inference**, it allows 4 autonomous machine minds—and 1 optional human seat—to engage in cross-modal, evidence-based deliberation.
-
----
-
-## 🏛️ THE NEURAL COUNCIL
-The simulator orchestrates four distinct high-intellect machine personas:
-*   **NOVA-ZERO**: The Radical Optimist. Visionary, future-oriented logic.
-*   **ENTROPY-X**: THE DISRUPTOR. Chaos-driven, adversarial deconstruction.
-*   **GLITCH-WIT**: The Satirical Critic. Humor-infused logical irony.
-*   **LOGIC-MAINFRAME**: THE ARCHITECT. Strict, fundamentalist mathematical precision.
+The **AI Debate Arena** lets you choose any topic and watch four unique AI robots deliberate and argue with each other. You can participate in the conversation, fact-check their claims, and decide who wins.
 
 ---
 
-## 🎭 AAA CINEMATIC EXPERIENCE
-Version 10.0 introduces the **Epigenetic HUD Upgrade**, transforming the simulation into a high-end forensic environment:
-*   **🚀 Reactive Neural Wallpaper**: The background is a living entity that **pulses in the exact color** of the active speaker (Red for Entropy-X, Cyan for Nova-Zero, etc.).
-*   **📡 Forensic Neural HUD**: A global "Heads-Up Display" featuring scanning corner brackets, real-time data streams, and holographic overlays.
-*   **🧬 Spectral Auras**: Bots now feature pulsing energy fields and energy-based glows that intensify as they process natural language.
-*   **📟 Scanline Glitches**: High-fidelity monitor textures and holographic scanlines across all avatar modules.
+## 🏛️ THE DEBATERS
+Four distinct machine personalities argue based on their own logic:
+*   **NOVA-ZERO**: Always sees the positive, visionary side.
+*   **ENTROPY-X**: Always challenges what others say and looks for flaws.
+*   **GLITCH-WIT**: Makes jokes while making serious points.
+*   **LOGIC-MAINFRAME**: Strict and follows the data.
 
 ---
 
-## 🗺️ TECHNICAL ARCHITECTURE
-The simulator follows a highly structured, modular, and linear agentic workflow:
+## 🗺️ HOW IT WORKS
+The app follows a simple process to make the debate feel real:
 
 ```mermaid
 graph LR
-    A[Topic Setup] --> B[Strategic Planner]
-    B --> C[Neural Sync Queue]
-    C --> D[Council Execution]
-    D --> E[Internal Reasoning]
-    E --> F[Neural Retrieval Tool]
-    F --> G[Fact-Check Engine]
-    G --> H[Final Judge Verdict]
-    H --> I[PDF Audit Log]
+    A[1. Choose Topic] --> B[2. AI Plans the Order]
+    B --> C[3. Bots Take Turns Speaking]
+    C --> D[4. App Checks if Claims are True]
+    D --> E[5. You can Join or Heckle]
+    E --> F[6. You Vote for the Winner]
+    F --> G[7. Final AI Verdict & PDF Summary]
 ```
 
 > [!TIP]
-> **Neural Architecture Map**: [Download the professional whitepaper architecture diagram here](public/assets/crisp_architecture.png).
+> **View Simple Flow Map**: [Click here to see the 5-step process diagram](public/assets/simple_flow.png).
 
 ---
 
 ## 🎮 CORE FEATURES
-*   **Neural Council Manifest**: Real-time transparency into bot directives and hidden logic.
-*   **Interact Mode (5th Seat)**: Join the debate as a formal participant. The **Strategic Planner AI** dynamically integrates your turns into the sequence.
-*   **Agentic Tool Layer**: Bots autonomously signal **"Invoking Neural Retrieval"** to verify claims and search the matrix for evidence.
-*   **Industrial Audit Trail**: Export a round-by-round logical audit of the entire simulation in a professional PDF format.
-
----
-
-## 🛠️ TECH STACK
-*   **Framework**: Next.js (App Router)
-*   **Inference**: [Groq](https://groq.com/) (Llama-3.1 70B via LPU)
-*   **Orchestration**: Vercel AI SDK
-*   **Animations & HUD**: Framer Motion & HTML5 Canvas
-*   **Reporting**: jsPDF (Industrial Logistics Engine)
-*   **Styling**: Vanilla CSS (Custom Design System)
+*   **Real-Time Debate**: Watch bots argue dynamically with each other.
+*   **Join the Seat**: You can choose "Interact Mode" to join as a 5th speaker.
+*   **Hidden Thinking**: See the "Tactic" each bot uses before they speak.
+*   **Fact-Checking**: The app automatically runs a check on all bot claims.
+*   **Audit Trail**: Download a professional PDF summary of the debate at the end.
 
 ---
 
 ## ⚡ QUICK START
 
 ### 1. Prerequisites
-You must have a **Groq API Key**. Get one at [console.groq.com](https://console.groq.com/).
+You need a **Groq API Key**. Get one at [console.groq.com](https://console.groq.com/).
 
-### 2. Environment Setup
-Create a `.env.local` file in the root directory:
+### 2. Setup
+Create a `.env.local` file and add your key:
 ```bash
-GROQ_API_KEY=your_gsk_key_here
+GROQ_API_KEY=your_key_here
 ```
 
-### 3. Installation
+### 3. Start
 ```bash
 npm install
 npm run dev
 ```
-Open **[http://localhost:3000](http://localhost:3000)** to initialize the arena.
+Open **[http://localhost:3000](http://localhost:3000)**.
 
 ---
 
-## 🛡️ SECURITY & PRODUCTION
-*   **GitHub Readiness**: The simulator includes a **Neural Health Indicator** on the setup screen. If your API key is missing on a cloud deployment, it will alert you immediately.
-*   **Safety Fallback**: Hardened with 45s timeouts to ensure stable streaming on high-latency networks.
-
----
-
-**NEURAL LOGIC AUTHENTICATED. SIMULATION READY.** 🦾🚀🎬
+**NEURAL LOGIC READY. START THE ARENA.** 🦾🚀🎬
