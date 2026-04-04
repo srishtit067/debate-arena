@@ -79,6 +79,7 @@ The simulator features a premium visual design system built for professional dem
 
 ## 🎮 CORE FEATURES
 *   **Interact Mode (5th Seat)**: Join the debate as a formal participant. The **Strategic Planner AI** dynamically integrates your turns into the sequence.
+*   **Speak Your Argument 🎤**: Integrated **Web Speech API** for real-time voice-to-text. Dictate your arguments directly into the arena with live transcription.
 *   **Neural Council Manifest**: Real-time transparency into bot directives and hidden tactical reasoning.
 *   **Neural Pulse Confidence**: Real-time audience reaction and confidence metrics that shift based on the strength of the argument.
 *   **Industrial Audit Trail**: Export a full, round-by-round logical audit of the entire simulation in a professional PDF format.
