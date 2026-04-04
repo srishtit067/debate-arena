@@ -1,4 +1,4 @@
-# 🦾 MULTI-MIND SIMULATOR // v12.5 "Industrial Research Edition"
+# 🦾 MULTI-MIND SIMULATOR // v12.5 
 ### CROSS-MODAL DEBATE & AUTOMATED IEEE RESEARCH SYNTHESIS
 
 The **Multi-Mind Simulator** is a high-fidelity agentic workflow designed for adversarial deliberation and automated research paper synthesis. Whether the topic is AGI alignment, **Bio-Ethics**, or **Geo-Politics**, the simulator uses Groq LPU Inference to provide sub-second, evidence-based debate and exports results in a professional **Two-Column IEEE Journal Format**.
